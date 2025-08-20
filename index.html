@@ -879,8 +879,9 @@
                     const data = await response.json();
                     features = data.features || [];
                     console.log('Loaded initial features from JSON file:', features.length);
-                    // Save to JSONBin immediately
+                    // Save to JSONBin immediately to initialize it
                     await saveFeaturesData(false);
+                    alert('JSONBin has been initialized with default data! Refresh the page to start using it.');
                 }
             } catch (error) {
                 console.error('Error loading initial features data:', error);
