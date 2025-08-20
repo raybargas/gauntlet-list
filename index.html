@@ -200,10 +200,9 @@
         .table-container {
             background: #1a1f2e;
             border-radius: 12px;
-            overflow: auto;
+            overflow-x: auto;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             border: 1px solid #2d3748;
-            max-height: 70vh;
             position: relative;
         }
 
@@ -1384,9 +1383,20 @@
 
         function confirmDelete() {
             if (featureToDelete !== null) {
-                features = features.filter(f => f.id !== featureToDelete);
-                renderTable();
-                saveFeaturesData();
+                const deletedFeature = features.find(f => f.id === featureToDelete);
+                if (deletedFeature) {
+                    // Add deletion timestamp and move to deleted array
+                    deletedFeature.deletedAt = new Date().toISOString();
+                    deletedFeatures.push(deletedFeature);
+                    
+                    // Remove from active features
+                    features = features.filter(f => f.id !== featureToDelete);
+                    
+                    // Update displays
+                    renderTable();
+                    updateDeletedSection();
+                    saveFeaturesData();
+                }
                 closeDeleteModal();
             }
         }
