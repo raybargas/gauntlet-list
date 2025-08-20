@@ -501,11 +501,57 @@
         .check-icon {
             color: #10b981;
             font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .no-check {
             color: #4a5568;
             font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .check-icon:hover {
+            transform: scale(1.2);
+            color: #059669;
+        }
+
+        .no-check:hover {
+            transform: scale(1.2);
+            color: #10b981;
+        }
+
+        /* Custom checkbox styling for other columns */
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            background: #1a1f2e;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .custom-checkbox:hover {
+            border-color: #10b981;
+            transform: scale(1.1);
+        }
+
+        .custom-checkbox.checked {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #10b981;
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
         }
 
         .facing-cell {
@@ -992,22 +1038,34 @@
                     </td>
                     <td class="feature-description">${feature.description}</td>
                     <td class="facing-cell">
-                        ${feature.internal ? '<i class="fas fa-check check-icon"></i>' : '<i class="fas fa-minus no-check"></i>'}
+                        <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus no-check'}" 
+                           onclick="toggleFacing(${feature.id}, 'internal')"
+                           title="Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        ${feature.external ? '<i class="fas fa-check check-icon"></i>' : '<i class="fas fa-minus no-check"></i>'}
+                        <i class="fas fa-${feature.external ? 'check check-icon' : 'minus no-check'}" 
+                           onclick="toggleFacing(${feature.id}, 'external')"
+                           title="Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <input type="checkbox" data-feature-id="${feature.id}" data-field="prfaq" ${prfaqChecked} onchange="updateCheckboxStatus(${feature.id}, 'prfaq', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
+                        <div class="custom-checkbox ${prfaqChecked ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'prfaq', this)"
+                             title="PRFAQ"></div>
                     </td>
                     <td class="facing-cell">
-                        <input type="checkbox" data-feature-id="${feature.id}" data-field="prd" ${prdChecked} onchange="updateCheckboxStatus(${feature.id}, 'prd', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
+                        <div class="custom-checkbox ${prdChecked ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'prd', this)"
+                             title="PRD"></div>
                     </td>
                     <td class="facing-cell">
-                        <input type="checkbox" data-feature-id="${feature.id}" data-field="figma" ${figmaChecked} onchange="updateCheckboxStatus(${feature.id}, 'figma', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
+                        <div class="custom-checkbox ${figmaChecked ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'figma', this)"
+                             title="Figma"></div>
                     </td>
                     <td class="facing-cell">
-                        <input type="checkbox" data-feature-id="${feature.id}" data-field="architecture" ${architectureChecked} onchange="updateCheckboxStatus(${feature.id}, 'architecture', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
+                        <div class="custom-checkbox ${architectureChecked ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'architecture', this)"
+                             title="Architecture"></div>
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
@@ -1173,7 +1231,33 @@
             });
         });
 
-        // Update checkbox status for any field
+        // Toggle facing (internal/external) status
+        function toggleFacing(featureId, field) {
+            const feature = features.find(f => f.id === featureId);
+            if (feature) {
+                feature[field] = !feature[field];
+                updateStats();
+                saveFeaturesData();
+                renderTable();
+            }
+        }
+
+        // Toggle custom checkbox
+        function toggleCheckbox(featureId, field, element) {
+            const feature = features.find(f => f.id === featureId);
+            if (feature) {
+                if (field === 'prfaq') {
+                    feature.prfaqStatus = feature.prfaqStatus === 'complete' ? 'not-started' : 'complete';
+                } else {
+                    feature[field] = !feature[field];
+                }
+                element.classList.toggle('checked');
+                updateStats();
+                saveFeaturesData();
+            }
+        }
+
+        // Legacy function for compatibility
         function updateCheckboxStatus(featureId, field, isChecked) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
