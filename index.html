@@ -1589,6 +1589,70 @@
             }
         }
 
+        // Deleted items functions
+        window.toggleDeletedItems = function() {
+            const deletedItems = document.getElementById('deletedItems');
+            const chevron = document.getElementById('deletedChevron');
+            
+            deletedItems.classList.toggle('show');
+            
+            if (deletedItems.classList.contains('show')) {
+                chevron.className = 'fas fa-chevron-up';
+            } else {
+                chevron.className = 'fas fa-chevron-down';
+            }
+        }
+
+        window.updateDeletedSection = function() {
+            const deletedSection = document.getElementById('deletedSection');
+            const deletedCount = document.getElementById('deletedCount');
+            const deletedItemsContainer = document.getElementById('deletedItems');
+            
+            if (deletedFeatures.length > 0) {
+                deletedSection.style.display = 'block';
+                deletedCount.textContent = deletedFeatures.length;
+                
+                // Render deleted items
+                deletedItemsContainer.innerHTML = deletedFeatures.map(feature => {
+                    const deletedDate = new Date(feature.deletedAt).toLocaleString();
+                    return `
+                        <div class="deleted-item">
+                            <div class="deleted-item-info">
+                                <div class="deleted-item-name">${feature.name}</div>
+                                <div class="deleted-item-date">Deleted: ${deletedDate}</div>
+                            </div>
+                            <button class="restore-btn" onclick="restoreFeature(${feature.id})">
+                                <i class="fas fa-undo"></i> Restore
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                deletedSection.style.display = 'none';
+            }
+        }
+
+        window.restoreFeature = function(featureId) {
+            const featureIndex = deletedFeatures.findIndex(f => f.id === featureId);
+            if (featureIndex !== -1) {
+                const feature = deletedFeatures[featureIndex];
+                
+                // Remove deletion timestamp
+                delete feature.deletedAt;
+                
+                // Add back to features
+                features.push(feature);
+                
+                // Remove from deleted
+                deletedFeatures.splice(featureIndex, 1);
+                
+                // Update displays
+                renderTable();
+                updateDeletedSection();
+                saveFeaturesData();
+            }
+        }
+
         // Initialize on page load
         loadFeaturesData();
     </script>
