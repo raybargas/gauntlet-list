@@ -8,6 +8,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 1
     },
     {
@@ -17,6 +21,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 2
     },
     {
@@ -26,6 +34,10 @@
       "internal": false,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 3
     },
     {
@@ -35,6 +47,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 4
     },
     {
@@ -44,6 +60,10 @@
       "internal": true,
       "external": false,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 5
     },
     {
@@ -53,6 +73,10 @@
       "internal": false,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 6
     },
     {
@@ -62,6 +86,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 7
     },
     {
@@ -71,6 +99,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 8
     },
     {
@@ -80,6 +112,10 @@
       "internal": true,
       "external": false,
       "prfaqStatus": "in-progress",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 9
     },
     {
@@ -89,6 +125,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 10
     },
     {
@@ -98,6 +138,10 @@
       "internal": true,
       "external": false,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 11
     },
     {
@@ -107,6 +151,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 12
     },
     {
@@ -116,6 +164,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 13
     },
     {
@@ -125,6 +177,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 14
     },
     {
@@ -134,6 +190,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 15
     },
     {
@@ -143,6 +203,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 16
     },
     {
@@ -152,6 +216,10 @@
       "internal": true,
       "external": true,
       "prfaqStatus": "complete",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 17
     },
     {
@@ -161,6 +229,10 @@
       "internal": true,
       "external": false,
       "prfaqStatus": "not-started",
+      "prd": false,
+      "mock": false,
+      "figma": false,
+      "architecture": false,
       "order": 18
     }
   ]
