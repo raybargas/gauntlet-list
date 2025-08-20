@@ -699,6 +699,10 @@
                     <i class="fas fa-plus"></i>
                     Add Feature
                 </button>
+                <button class="modal-btn modal-btn-primary" onclick="initializeJSONBin()" style="margin-left: 10px;">
+                    <i class="fas fa-database"></i>
+                    Initialize Data
+                </button>
             </div>
         </div>
 
@@ -1337,6 +1341,34 @@
                 await loadFeaturesData();
             }
         }, 30000);
+
+        // Manual initialization function
+        async function initializeJSONBin() {
+            if (confirm('This will load the default 18 features and save them to the cloud. Continue?')) {
+                showSyncStatus('Initializing...');
+                try {
+                    const response = await fetch(dataFilePath);
+                    if (response.ok) {
+                        const data = await response.json();
+                        features = data.features || [];
+                        console.log('Loaded features from JSON file:', features.length);
+                        
+                        // Force save to JSONBin
+                        await saveFeaturesData(true);
+                        
+                        alert('JSONBin initialized successfully with ' + features.length + ' features!');
+                        
+                        // Reload the page to see the data
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error('Error initializing:', error);
+                    alert('Error initializing data: ' + error.message);
+                } finally {
+                    hideSyncStatus();
+                }
+            }
+        }
 
         // Initialize on page load
         loadFeaturesData();
