@@ -1190,6 +1190,16 @@
                 const prdChecked = feature.prd ? 'checked' : '';
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
+                
+                // Check if all documentation is complete
+                const allDocsComplete = feature.prfaqStatus === 'complete' && 
+                                       feature.prd && 
+                                       feature.figma && 
+                                       feature.architecture;
+                
+                if (allDocsComplete) {
+                    row.classList.add('docs-complete');
+                }
 
                 const rowNumber = index + 1;
                 row.innerHTML = `
