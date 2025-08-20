@@ -592,8 +592,8 @@
         }
 
         .feature-table tbody tr.drag-over {
-            background: #374151;
             border-top: 3px solid #5ad1f2;
+            box-shadow: 0 -2px 10px rgba(90, 209, 242, 0.3);
         }
 
         .feature-table td {
@@ -1287,16 +1287,12 @@
             
             e.dataTransfer.dropEffect = 'move';
             
-            const afterElement = getDragAfterElement(e.clientY);
-            const tbody = document.getElementById('featureTableBody');
-            
+            // Only show visual feedback, don't actually move the element yet
             const rows = document.querySelectorAll('#featureTableBody tr');
             rows.forEach(row => row.classList.remove('drag-over'));
             
-            if (afterElement == null) {
-                tbody.appendChild(draggedElement);
-            } else {
-                tbody.insertBefore(draggedElement, afterElement);
+            const afterElement = getDragAfterElement(e.clientY);
+            if (afterElement && afterElement !== draggedElement) {
                 afterElement.classList.add('drag-over');
             }
             
@@ -1306,6 +1302,16 @@
         function handleDrop(e) {
             if (e.stopPropagation) {
                 e.stopPropagation();
+            }
+            
+            // Now actually move the element
+            const afterElement = getDragAfterElement(e.clientY);
+            const tbody = document.getElementById('featureTableBody');
+            
+            if (afterElement == null) {
+                tbody.appendChild(draggedElement);
+            } else {
+                tbody.insertBefore(draggedElement, afterElement);
             }
             
             // Update the features array with new order
