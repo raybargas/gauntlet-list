@@ -848,6 +848,21 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Deleted Items Section -->
+        <div class="deleted-section" id="deletedSection" style="display: none;">
+            <div class="deleted-header" onclick="toggleDeletedItems()">
+                <h3>
+                    <i class="fas fa-trash-restore"></i>
+                    Deleted Features
+                </h3>
+                <div>
+                    <span class="deleted-count" id="deletedCount">0</span>
+                    <i class="fas fa-chevron-down" id="deletedChevron"></i>
+                </div>
+            </div>
+            <div class="deleted-items" id="deletedItems"></div>
+        </div>
     </div>
 
     <!-- Auto-save Notification -->
@@ -879,21 +894,6 @@
             <div class="modal-buttons">
                 <button type="button" class="modal-btn modal-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
                 <button type="button" class="modal-btn" style="background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);" onclick="confirmDelete()">Delete</button>
-            </div>
-            
-            <!-- Deleted Items Section -->
-            <div class="deleted-section" id="deletedSection" style="display: none;">
-                <div class="deleted-header" onclick="toggleDeletedItems()">
-                    <h3>
-                        <i class="fas fa-trash-restore"></i>
-                        Deleted Features
-                    </h3>
-                    <div>
-                        <span class="deleted-count" id="deletedCount">0</span>
-                        <i class="fas fa-chevron-down" id="deletedChevron"></i>
-                    </div>
-                </div>
-                <div class="deleted-items" id="deletedItems"></div>
             </div>
         </div>
     </div>
