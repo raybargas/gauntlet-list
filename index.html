@@ -1407,7 +1407,7 @@
         });
 
         // Toggle icon for all checkbox fields
-        function toggleIcon(featureId, field) {
+        window.toggleIcon = function(featureId, field) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
                 if (field === 'prfaq') {
@@ -1438,7 +1438,7 @@
         // Delete feature function
         let featureToDelete = null;
 
-        function deleteFeature(featureId) {
+        window.deleteFeature = function(featureId) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
                 featureToDelete = featureId;
@@ -1447,7 +1447,7 @@
             }
         }
 
-        function confirmDelete() {
+        window.confirmDelete = function() {
             if (featureToDelete !== null) {
                 const deletedFeature = features.find(f => f.id === featureToDelete);
                 if (deletedFeature) {
@@ -1467,7 +1467,7 @@
             }
         }
 
-        function closeDeleteModal() {
+        window.closeDeleteModal = function() {
             document.getElementById('deleteModal').style.display = 'none';
             featureToDelete = null;
         }
@@ -1475,7 +1475,7 @@
         // Modal functions
         let editingFeatureId = null;
 
-        function openModal(isEdit = false) {
+        window.openModal = function(isEdit = false) {
             document.getElementById('featureModal').style.display = 'block';
             document.getElementById('modalTitle').textContent = isEdit ? 'Edit Feature' : 'Add New Feature';
             if (!isEdit) {
@@ -1484,18 +1484,18 @@
             }
         }
 
-        function closeModal() {
+        window.closeModal = function() {
             document.getElementById('featureModal').style.display = 'none';
             editingFeatureId = null;
         }
 
         // Add new feature function with modal
-        function addNewFeature() {
+        window.addNewFeature = function() {
             openModal(false);
         }
 
         // Edit existing feature
-        function editFeature(featureId) {
+        window.editFeature = function(featureId) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
                 editingFeatureId = featureId;
@@ -1625,7 +1625,7 @@
         }, 30000);
 
         // Manual refresh function
-        async function manualRefresh() {
+        window.manualRefresh = async function() {
             console.log('Manual refresh triggered');
             await loadFeaturesData();
             
@@ -1641,7 +1641,7 @@
         }
 
         // Manual initialization function
-        async function initializeJSONBin() {
+        window.initializeJSONBin = async function() {
             if (confirm('This will load the default 18 features and save them to the cloud. Continue?')) {
                 showSyncStatus('Initializing...');
                 try {
