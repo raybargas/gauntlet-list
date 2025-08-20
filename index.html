@@ -699,7 +699,7 @@
                     <i class="fas fa-plus"></i>
                     Add Feature
                 </button>
-                <button class="modal-btn modal-btn-primary" onclick="initializeJSONBin()" style="margin-left: 10px;">
+                <button id="initializeBtn" class="modal-btn modal-btn-primary" onclick="initializeJSONBin()" style="margin-left: 10px; display: none;">
                     <i class="fas fa-database"></i>
                     Initialize Data
                 </button>
@@ -846,6 +846,14 @@
                     features = data.record.features || [];
                     console.log('Loaded features from JSONBin:', features.length);
                     
+                    // Hide initialize button if we have data
+                    if (features.length > 0) {
+                        document.getElementById('initializeBtn').style.display = 'none';
+                    } else {
+                        // Show initialize button if JSONBin is empty
+                        document.getElementById('initializeBtn').style.display = 'flex';
+                    }
+                    
                     // Also save to localStorage as backup
                     localStorage.setItem('gauntletFeatures', JSON.stringify(features));
                 } else {
@@ -853,6 +861,9 @@
                 }
             } catch (error) {
                 console.error('Error loading from JSONBin, trying localStorage:', error);
+                
+                // Show initialize button on error
+                document.getElementById('initializeBtn').style.display = 'flex';
                 
                 // Fallback to localStorage
                 const savedData = localStorage.getItem('gauntletFeatures');
@@ -862,12 +873,10 @@
                         console.log('Loaded features from localStorage backup:', features.length);
                     } catch (e) {
                         console.error('Error parsing localStorage data:', e);
-                        // Last resort: load from original JSON file
-                        await loadFromOriginalJSON();
+                        features = [];
                     }
                 } else {
-                    // Load from original JSON file as seed data
-                    await loadFromOriginalJSON();
+                    features = [];
                 }
             }
             
@@ -880,23 +889,6 @@
             });
         }
 
-        // Helper function to load from original JSON file
-        async function loadFromOriginalJSON() {
-            try {
-                const response = await fetch(dataFilePath);
-                if (response.ok) {
-                    const data = await response.json();
-                    features = data.features || [];
-                    console.log('Loaded initial features from JSON file:', features.length);
-                    // Save to JSONBin immediately to initialize it
-                    await saveFeaturesData(false);
-                    alert('JSONBin has been initialized with default data! Refresh the page to start using it.');
-                }
-            } catch (error) {
-                console.error('Error loading initial features data:', error);
-                features = [];
-            }
-        }
 
         // Save features data to JSONBin and localStorage
         async function saveFeaturesData(showNotification = true) {
