@@ -1266,7 +1266,25 @@
                 e.stopPropagation();
             }
             
-            // Save the new order automatically after drop
+            // Update the features array with new order
+            const rows = document.querySelectorAll('#featureTableBody tr');
+            const newOrder = [];
+            rows.forEach((row, index) => {
+                const featureId = parseInt(row.dataset.featureId);
+                const feature = features.find(f => f.id === featureId);
+                if (feature) {
+                    feature.order = index + 1;
+                    newOrder.push(feature);
+                }
+            });
+            
+            // Update features array
+            features = newOrder;
+            
+            // Re-render the table to update row numbers
+            renderTable();
+            
+            // Save the new order
             saveFeaturesData();
             
             return false;
