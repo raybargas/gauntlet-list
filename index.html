@@ -498,36 +498,31 @@
             line-height: 1.4;
         }
 
-        /* Custom checkbox styling for all checkbox columns */
-        .custom-checkbox {
-            width: 24px;
-            height: 24px;
-            background: #1a1f2e;
-            border: 2px solid #4a5568;
-            border-radius: 6px;
+        /* Clickable icon styling for all checkbox columns */
+        .check-icon {
+            color: #10b981;
+            font-size: 1.25rem;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             transition: all 0.2s ease;
-            position: relative;
         }
 
-        .custom-checkbox:hover {
-            border-color: #10b981;
-            transform: scale(1.1);
+        .dash-icon {
+            color: #4a5568;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .custom-checkbox.checked {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-color: #10b981;
+        .check-icon:hover {
+            transform: scale(1.3);
+            color: #059669;
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
         }
 
-        .custom-checkbox.checked::after {
-            content: '✓';
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+        .dash-icon:hover {
+            transform: scale(1.3);
+            color: #10b981;
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
         }
 
         .facing-cell {
@@ -1014,34 +1009,34 @@
                     </td>
                     <td class="feature-description">${feature.description}</td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${feature.internal ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'internal', this)"
-                             title="Internal"></div>
+                        <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'internal')"
+                           title="Internal - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${feature.external ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'external', this)"
-                             title="External"></div>
+                        <i class="fas fa-${feature.external ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'external')"
+                           title="External - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${prfaqChecked ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'prfaq', this)"
-                             title="PRFAQ"></div>
+                        <i class="fas fa-${prfaqChecked ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'prfaq')"
+                           title="PRFAQ - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${prdChecked ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'prd', this)"
-                             title="PRD"></div>
+                        <i class="fas fa-${prdChecked ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'prd')"
+                           title="PRD - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${figmaChecked ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'figma', this)"
-                             title="Figma"></div>
+                        <i class="fas fa-${figmaChecked ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'figma')"
+                           title="Figma - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
-                        <div class="custom-checkbox ${architectureChecked ? 'checked' : ''}" 
-                             onclick="toggleCheckbox(${feature.id}, 'architecture', this)"
-                             title="Architecture"></div>
+                        <i class="fas fa-${architectureChecked ? 'check check-icon' : 'minus dash-icon'}" 
+                           onclick="toggleIcon(${feature.id}, 'architecture')"
+                           title="Architecture - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
@@ -1207,8 +1202,8 @@
             });
         });
 
-        // Toggle custom checkbox for all fields
-        function toggleCheckbox(featureId, field, element) {
+        // Toggle icon for all checkbox fields
+        function toggleIcon(featureId, field) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
                 if (field === 'prfaq') {
@@ -1216,9 +1211,9 @@
                 } else {
                     feature[field] = !feature[field];
                 }
-                element.classList.toggle('checked');
                 updateStats();
                 saveFeaturesData();
+                renderTable(); // Re-render to update the icon
             }
         }
 
