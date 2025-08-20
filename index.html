@@ -200,9 +200,11 @@
         .table-container {
             background: #1a1f2e;
             border-radius: 12px;
-            overflow-x: auto;
+            overflow: auto;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             border: 1px solid #2d3748;
+            max-height: 70vh;
+            position: relative;
         }
 
         .action-buttons {
@@ -440,6 +442,91 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .deleted-section {
+            margin-top: 2rem;
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid #2d3748;
+        }
+
+        .deleted-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .deleted-header h3 {
+            color: #ef4444;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deleted-count {
+            background: #ef4444;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .deleted-items {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .deleted-items.show {
+            display: block;
+        }
+
+        .deleted-item {
+            background: #252d3d;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #374151;
+        }
+
+        .deleted-item-info {
+            flex: 1;
+        }
+
+        .deleted-item-name {
+            color: #f7fafc;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .deleted-item-date {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+
+        .restore-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .restore-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
         .feature-table th {
@@ -793,6 +880,21 @@
                 <button type="button" class="modal-btn modal-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
                 <button type="button" class="modal-btn" style="background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);" onclick="confirmDelete()">Delete</button>
             </div>
+            
+            <!-- Deleted Items Section -->
+            <div class="deleted-section" id="deletedSection" style="display: none;">
+                <div class="deleted-header" onclick="toggleDeletedItems()">
+                    <h3>
+                        <i class="fas fa-trash-restore"></i>
+                        Deleted Features
+                    </h3>
+                    <div>
+                        <span class="deleted-count" id="deletedCount">0</span>
+                        <i class="fas fa-chevron-down" id="deletedChevron"></i>
+                    </div>
+                </div>
+                <div class="deleted-items" id="deletedItems"></div>
+            </div>
         </div>
     </div>
 
@@ -861,6 +963,7 @@
 
         // Feature data management
         let features = [];
+        let deletedFeatures = [];
         let dataFilePath = './features-data.json';
         let isSyncing = false;
 
@@ -879,7 +982,9 @@
                 if (response.ok) {
                     const data = await response.json();
                     features = data.record.features || [];
+                    deletedFeatures = data.record.deletedFeatures || [];
                     console.log('Loaded features from JSONBin:', features.length);
+                    console.log('Loaded deleted features:', deletedFeatures.length);
                     
                     // Hide initialize button if we have data
                     if (features.length > 0) {
@@ -902,6 +1007,8 @@
                 
                 // Fallback to localStorage
                 const savedData = localStorage.getItem('gauntletFeatures');
+                const savedDeleted = localStorage.getItem('gauntletDeletedFeatures');
+                
                 if (savedData) {
                     try {
                         features = JSON.parse(savedData);
@@ -913,10 +1020,23 @@
                 } else {
                     features = [];
                 }
+                
+                if (savedDeleted) {
+                    try {
+                        deletedFeatures = JSON.parse(savedDeleted);
+                        console.log('Loaded deleted features from localStorage:', deletedFeatures.length);
+                    } catch (e) {
+                        console.error('Error parsing deleted features:', e);
+                        deletedFeatures = [];
+                    }
+                } else {
+                    deletedFeatures = [];
+                }
             }
             
             hideSyncStatus();
             renderTable();
+            updateDeletedSection();
             document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: 'long', 
@@ -942,6 +1062,7 @@
 
             // Save to localStorage as backup
             localStorage.setItem('gauntletFeatures', JSON.stringify(features));
+            localStorage.setItem('gauntletDeletedFeatures', JSON.stringify(deletedFeatures));
             console.log('Features saved to localStorage:', features.length);
 
             // Save to JSONBin
@@ -956,7 +1077,7 @@
                             'Content-Type': 'application/json',
                             'X-Master-Key': JSONBIN_API_KEY
                         },
-                        body: JSON.stringify({ features: features })
+                        body: JSON.stringify({ features: features, deletedFeatures: deletedFeatures })
                     });
                     
                     if (response.ok) {
