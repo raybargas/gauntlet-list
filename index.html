@@ -534,28 +534,33 @@
         }
 
         .stats-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
         }
 
         .stat-card {
             background: #1a1f2e;
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 1rem;
+            border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             border: 1px solid #2d3748;
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
         }
 
         .stat-label {
             color: #a0aec0;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #5ad1f2;
         }
