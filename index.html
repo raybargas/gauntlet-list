@@ -1501,6 +1501,7 @@
                 editingFeatureId = featureId;
                 document.getElementById('featureName').value = feature.name;
                 document.getElementById('featureDescription').value = feature.description;
+                document.getElementById('featureUrl').value = feature.url || '';
                 document.getElementById('featureInternal').checked = feature.internal;
                 document.getElementById('featureExternal').checked = feature.external;
                 document.getElementById('featurePrfaq').checked = feature.prfaqStatus === 'complete';
@@ -1521,6 +1522,7 @@
                 if (feature) {
                     feature.name = document.getElementById('featureName').value;
                     feature.description = document.getElementById('featureDescription').value;
+                    feature.url = document.getElementById('featureUrl').value;
                     feature.internal = document.getElementById('featureInternal').checked;
                     feature.external = document.getElementById('featureExternal').checked;
                     feature.prfaqStatus = document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started';
@@ -1535,6 +1537,7 @@
                     id: maxId + 1,
                     name: document.getElementById('featureName').value,
                     description: document.getElementById('featureDescription').value,
+                    url: document.getElementById('featureUrl').value,
                     internal: document.getElementById('featureInternal').checked,
                     external: document.getElementById('featureExternal').checked,
                     prfaqStatus: document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started',
