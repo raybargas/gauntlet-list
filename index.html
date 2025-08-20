@@ -577,6 +577,33 @@
             margin-bottom: 0.5rem;
             color: #374151;
         }
+
+        /* Auto-save notification */
+        .save-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        .save-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -632,10 +659,6 @@
                     <button class="filter-btn" data-filter="external">External Only</button>
                     <button class="filter-btn" data-filter="both">Both</button>
                 </div>
-                <button class="save-btn" onclick="saveOrder()">
-                    <i class="fas fa-save"></i>
-                    Save Order
-                </button>
                 <button class="add-btn" onclick="addNewFeature()">
                     <i class="fas fa-plus"></i>
                     Add Feature
@@ -663,6 +686,12 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- Auto-save Notification -->
+    <div id="saveNotification" class="save-notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Changes saved automatically</span>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -748,52 +777,52 @@
         let features = [];
         let dataFilePath = './features-data.json';
 
-        // Load features from JSON file
+        // Load features from localStorage or JSON file
         async function loadFeaturesData() {
-            try {
-                const response = await fetch(dataFilePath);
-                if (response.ok) {
-                    const data = await response.json();
-                    features = data.features || [];
-                    
-                    // Apply saved order from localStorage if it exists
-                    loadSavedOrder();
-                    
-                    // Initial render
-                    renderTable();
-                    
-                    // Update last updated date
-                    document.getElementById('lastUpdated').textContent = data.lastUpdated || new Date().toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
-                } else {
-                    throw new Error('Failed to load data');
-                }
-            } catch (error) {
-                console.error('Error loading features data:', error);
-                // Load from localStorage backup if available
-                const savedBackup = localStorage.getItem('featuresBackup');
-                if (savedBackup) {
-                    const backupData = JSON.parse(savedBackup);
-                    features = backupData.features || [];
-                } else {
-                    // If no backup, initialize with empty array
+            // First, check localStorage for saved data
+            const savedData = localStorage.getItem('gauntletFeatures');
+            
+            if (savedData) {
+                try {
+                    features = JSON.parse(savedData);
+                    console.log('Loaded features from localStorage:', features.length);
+                } catch (e) {
+                    console.error('Error parsing localStorage data:', e);
                     features = [];
                 }
-                renderTable();
-                document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
             }
+            
+            // If no localStorage data, load from JSON file as seed data
+            if (!savedData || features.length === 0) {
+                try {
+                    const response = await fetch(dataFilePath);
+                    if (response.ok) {
+                        const data = await response.json();
+                        features = data.features || [];
+                        console.log('Loaded initial features from JSON:', features.length);
+                        // Save to localStorage immediately (without notification)
+                        saveFeaturesData(false);
+                    }
+                } catch (error) {
+                    console.error('Error loading initial features data:', error);
+                    // If both localStorage and JSON fail, use empty array
+                    if (!features || features.length === 0) {
+                        features = [];
+                    }
+                }
+            }
+            
+            renderTable();
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
         }
 
-        // Save features data
-        async function saveFeaturesData() {
-            // Update order property for each feature
+        // Save features data to localStorage
+        function saveFeaturesData(showNotification = true) {
+            // Update order property for each feature based on current table order
             const rows = document.querySelectorAll('#featureTableBody tr');
             rows.forEach((row, index) => {
                 const featureId = parseInt(row.dataset.featureId);
@@ -806,62 +835,41 @@
             // Sort features by order
             features.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-            // Save to localStorage as backup
-            localStorage.setItem('featuresBackup', JSON.stringify({
-                features: features,
-                lastUpdated: new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                })
-            }));
+            // Save to localStorage
+            localStorage.setItem('gauntletFeatures', JSON.stringify(features));
+            console.log('Features saved to localStorage:', features.length);
 
-            // Show save confirmation
-            const saveBtn = document.querySelector('.save-btn');
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-            saveBtn.style.background = '#10b981';
-            setTimeout(() => {
-                saveBtn.innerHTML = originalText;
-                saveBtn.style.background = '';
-            }, 2000);
+            // Update last updated date
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
 
-            console.log('Features data saved to localStorage. Server-side save would be needed for file persistence.');
-        }
-
-        // Load saved order from localStorage
-        function loadSavedOrder() {
-            const savedBackup = localStorage.getItem('featuresBackup');
-            if (savedBackup) {
-                try {
-                    const backupData = JSON.parse(savedBackup);
-                    const orderMap = {};
-                    const statusMap = {};
-                    
-                    backupData.features.forEach(f => {
-                        orderMap[f.id] = f.order;
-                        statusMap[f.id] = f.prfaqStatus;
-                    });
-                    
-                    features.forEach(feature => {
-                        if (orderMap[feature.id]) {
-                            feature.order = orderMap[feature.id];
-                        }
-                        if (statusMap[feature.id]) {
-                            feature.prfaqStatus = statusMap[feature.id];
-                        }
-                    });
-                    
-                    features.sort((a, b) => (a.order || 999) - (b.order || 999));
-                } catch (e) {
-                    console.error('Error loading backup data:', e);
-                }
+            // Show save notification
+            if (showNotification) {
+                const notification = document.getElementById('saveNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
             }
         }
 
-        // Save current order
+        // Save order (called by button)
         function saveOrder() {
             saveFeaturesData();
+            // Show save confirmation
+            const saveBtn = document.querySelector('.save-btn');
+            if (saveBtn) {
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                saveBtn.style.background = '#10b981';
+                setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.style.background = '';
+                }, 2000);
+            }
         }
 
         // Render table
@@ -978,6 +986,9 @@
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
+            
+            // Save the new order automatically after drop
+            saveFeaturesData();
             
             return false;
         }
