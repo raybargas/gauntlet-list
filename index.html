@@ -841,7 +841,8 @@
             <table class="feature-table">
                 <thead>
                     <tr>
-                        <th style="width: 25%;">Feature</th>
+                        <th style="width: 3%;">#</th>
+                        <th style="width: 22%;">Feature</th>
                         <th style="width: 35%;">Description</th>
                         <th style="width: 5%;">Internal</th>
                         <th style="width: 5%;">External</th>
@@ -1151,7 +1152,9 @@
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
 
+                const rowNumber = index + 1;
                 row.innerHTML = `
+                    <td style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'};">${rowNumber}</td>
                     <td class="feature-name">
                         <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
                         <span class="feature-name-text">${feature.name}</span>
