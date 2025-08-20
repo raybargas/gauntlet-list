@@ -712,6 +712,9 @@
                     <button class="filter-btn" data-filter="external">External Only</button>
                     <button class="filter-btn" data-filter="both">Both</button>
                 </div>
+                <button class="modal-btn modal-btn-primary" onclick="manualRefresh()" title="Refresh data from cloud" style="margin-right: 10px;">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
                 <button class="add-btn" onclick="addNewFeature()">
                     <i class="fas fa-plus"></i>
                     Add Feature
@@ -1369,14 +1372,58 @@
             }, 500);
         }
 
+        // Track if user is actively editing
+        let isUserActive = false;
+        let activityTimeout;
+
+        // Mark user as active when interacting with the page
+        function markUserActive() {
+            isUserActive = true;
+            clearTimeout(activityTimeout);
+            // Consider user inactive after 5 seconds of no activity
+            activityTimeout = setTimeout(() => {
+                isUserActive = false;
+            }, 5000);
+        }
+
+        // Listen for user activity
+        document.addEventListener('click', markUserActive);
+        document.addEventListener('keypress', markUserActive);
+        document.addEventListener('mousemove', markUserActive);
+
         // Auto-refresh data every 30 seconds to get updates from other users
         setInterval(async () => {
-            // Only refresh if not currently editing
-            const modal = document.getElementById('featureModal');
-            if (modal.style.display !== 'block') {
+            // Check if any modal is open
+            const featureModal = document.getElementById('featureModal');
+            const deleteModal = document.getElementById('deleteModal');
+            const isModalOpen = featureModal.style.display === 'block' || deleteModal.style.display === 'block';
+            
+            // Only refresh if:
+            // 1. No modal is open
+            // 2. User is not actively interacting with the page
+            if (!isModalOpen && !isUserActive) {
+                console.log('Auto-refreshing data...');
                 await loadFeaturesData();
+            } else {
+                console.log('Skipping auto-refresh - user is active or modal is open');
             }
         }, 30000);
+
+        // Manual refresh function
+        async function manualRefresh() {
+            console.log('Manual refresh triggered');
+            await loadFeaturesData();
+            
+            // Show notification
+            const notification = document.getElementById('saveNotification');
+            const originalText = notification.querySelector('span').textContent;
+            notification.querySelector('span').textContent = 'Data refreshed from cloud';
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.querySelector('span').textContent = originalText;
+            }, 2000);
+        }
 
         // Manual initialization function
         async function initializeJSONBin() {
