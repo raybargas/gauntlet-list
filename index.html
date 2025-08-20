@@ -828,19 +828,19 @@
                 <div class="stat-value" style="color: #5ad1f2; font-size: 1rem;">Gauntlet Sprint</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top 15: PRFAQs Needed</div>
+                <div class="stat-label">PRFAQs Needed</div>
                 <div class="stat-value" id="prfaqRequired">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top 15: PRDs Needed</div>
+                <div class="stat-label">PRDs Needed</div>
                 <div class="stat-value" id="prdRequired">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top 15: Figmas Needed</div>
+                <div class="stat-label">Figmas Needed</div>
                 <div class="stat-value" id="figmaRequired">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top 15: ARCH Needed</div>
+                <div class="stat-label">ARCH Needed</div>
                 <div class="stat-value" id="architectureRequired">0</div>
             </div>
         </div>
@@ -862,10 +862,6 @@
                     <i class="fas fa-database"></i>
                     Initialize Data
                 </button>
-                <div class="gauntlet-indicator">
-                    <i class="fas fa-bolt"></i>
-                    <span>Top 15 = Gauntlet Sprint</span>
-                </div>
             </div>
         </div>
 
@@ -1446,7 +1442,7 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
-        // Update statistics
+        // Update statistics - Top 15 only
         function updateStats() {
             const rows = document.querySelectorAll('#featureTableBody tr:not([style*="display: none"])');
             let prfaqRequired = 0;
@@ -1454,7 +1450,10 @@
             let figmaRequired = 0;
             let architectureRequired = 0;
 
-            rows.forEach(row => {
+            // Only count the first 15 visible rows
+            const top15Rows = Array.from(rows).slice(0, 15);
+            
+            top15Rows.forEach(row => {
                 const featureId = parseInt(row.dataset.featureId);
                 const feature = features.find(f => f.id === featureId);
                 
@@ -1466,7 +1465,6 @@
                 }
             });
 
-            document.getElementById('totalFeatures').textContent = rows.length;
             document.getElementById('prfaqRequired').textContent = prfaqRequired;
             document.getElementById('prdRequired').textContent = prdRequired;
             document.getElementById('figmaRequired').textContent = figmaRequired;
