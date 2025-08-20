@@ -876,15 +876,16 @@
                 <thead>
                     <tr>
                         <th style="width: 3%;">#</th>
-                        <th style="width: 22%;">Feature</th>
-                        <th style="width: 35%;">Description</th>
+                        <th style="width: 20%;">Feature</th>
+                        <th style="width: 30%;">Description</th>
+                        <th style="width: 4%;">Link</th>
                         <th style="width: 5%;">Internal</th>
                         <th style="width: 5%;">External</th>
                         <th style="width: 5%;">PRFAQ</th>
                         <th style="width: 5%;">PRD</th>
                         <th style="width: 5%;">Figma</th>
                         <th style="width: 5%;">ARCH</th>
-                        <th style="width: 10%;">Actions</th>
+                        <th style="width: 8%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="featureTableBody">
@@ -957,6 +958,10 @@
                 <div class="form-group">
                     <label for="featureDescription">Description *</label>
                     <textarea id="featureDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="featureUrl">Link/URL (optional)</label>
+                    <input type="url" id="featureUrl" placeholder="https://example.com/feature-docs">
                 </div>
                 <div class="form-group">
                     <label>Facing</label>
@@ -1194,6 +1199,9 @@
                         <span class="feature-name-text">${feature.name}</span>
                     </td>
                     <td class="feature-description">${feature.description}</td>
+                    <td style="text-align: center;">
+                        ${feature.url ? `<a href="${feature.url}" target="_blank" title="Open link" style="color: #5ad1f2; font-size: 1.1rem;"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                    </td>
                     <td class="facing-cell">
                         <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'internal')"
