@@ -604,6 +604,37 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Sync status indicator */
+        .sync-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+        }
+
+        .sync-status.show {
+            display: flex;
+        }
+
+        .sync-status i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -694,6 +725,12 @@
         <span>Changes saved automatically</span>
     </div>
 
+    <!-- Sync Status Indicator -->
+    <div id="syncStatus" class="sync-status">
+        <i class="fas fa-sync-alt"></i>
+        <span id="syncStatusText">Syncing...</span>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content" style="max-width: 400px;">
@@ -773,45 +810,59 @@
     </div>
 
     <script>
+        // JSONBin configuration
+        const JSONBIN_BIN_ID = '68a60b5843b1c97be9238e9a';
+        const JSONBIN_API_KEY = '$2a$10$6vyQ2E0ESVfu.SvYk8J.9uoZAtXrehoLHaRhtbkLmXl0Wov3hvcga';
+        const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3';
+
         // Feature data management
         let features = [];
         let dataFilePath = './features-data.json';
+        let isSyncing = false;
 
-        // Load features from localStorage or JSON file
+        // Load features from JSONBin
         async function loadFeaturesData() {
-            // First, check localStorage for saved data
-            const savedData = localStorage.getItem('gauntletFeatures');
+            showSyncStatus('Loading...');
             
-            if (savedData) {
-                try {
-                    features = JSON.parse(savedData);
-                    console.log('Loaded features from localStorage:', features.length);
-                } catch (e) {
-                    console.error('Error parsing localStorage data:', e);
-                    features = [];
+            try {
+                // Fetch from JSONBin
+                const response = await fetch(`${JSONBIN_BASE_URL}/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    features = data.record.features || [];
+                    console.log('Loaded features from JSONBin:', features.length);
+                    
+                    // Also save to localStorage as backup
+                    localStorage.setItem('gauntletFeatures', JSON.stringify(features));
+                } else {
+                    throw new Error('Failed to load from JSONBin');
+                }
+            } catch (error) {
+                console.error('Error loading from JSONBin, trying localStorage:', error);
+                
+                // Fallback to localStorage
+                const savedData = localStorage.getItem('gauntletFeatures');
+                if (savedData) {
+                    try {
+                        features = JSON.parse(savedData);
+                        console.log('Loaded features from localStorage backup:', features.length);
+                    } catch (e) {
+                        console.error('Error parsing localStorage data:', e);
+                        // Last resort: load from original JSON file
+                        await loadFromOriginalJSON();
+                    }
+                } else {
+                    // Load from original JSON file as seed data
+                    await loadFromOriginalJSON();
                 }
             }
             
-            // If no localStorage data, load from JSON file as seed data
-            if (!savedData || features.length === 0) {
-                try {
-                    const response = await fetch(dataFilePath);
-                    if (response.ok) {
-                        const data = await response.json();
-                        features = data.features || [];
-                        console.log('Loaded initial features from JSON:', features.length);
-                        // Save to localStorage immediately (without notification)
-                        saveFeaturesData(false);
-                    }
-                } catch (error) {
-                    console.error('Error loading initial features data:', error);
-                    // If both localStorage and JSON fail, use empty array
-                    if (!features || features.length === 0) {
-                        features = [];
-                    }
-                }
-            }
-            
+            hideSyncStatus();
             renderTable();
             document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
                 year: 'numeric', 
@@ -820,8 +871,25 @@
             });
         }
 
-        // Save features data to localStorage
-        function saveFeaturesData(showNotification = true) {
+        // Helper function to load from original JSON file
+        async function loadFromOriginalJSON() {
+            try {
+                const response = await fetch(dataFilePath);
+                if (response.ok) {
+                    const data = await response.json();
+                    features = data.features || [];
+                    console.log('Loaded initial features from JSON file:', features.length);
+                    // Save to JSONBin immediately
+                    await saveFeaturesData(false);
+                }
+            } catch (error) {
+                console.error('Error loading initial features data:', error);
+                features = [];
+            }
+        }
+
+        // Save features data to JSONBin and localStorage
+        async function saveFeaturesData(showNotification = true) {
             // Update order property for each feature based on current table order
             const rows = document.querySelectorAll('#featureTableBody tr');
             rows.forEach((row, index) => {
@@ -835,9 +903,37 @@
             // Sort features by order
             features.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-            // Save to localStorage
+            // Save to localStorage as backup
             localStorage.setItem('gauntletFeatures', JSON.stringify(features));
             console.log('Features saved to localStorage:', features.length);
+
+            // Save to JSONBin
+            if (!isSyncing) {
+                isSyncing = true;
+                showSyncStatus('Saving...');
+                
+                try {
+                    const response = await fetch(`${JSONBIN_BASE_URL}/b/${JSONBIN_BIN_ID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_API_KEY
+                        },
+                        body: JSON.stringify({ features: features })
+                    });
+                    
+                    if (response.ok) {
+                        console.log('Features saved to JSONBin');
+                    } else {
+                        console.error('Failed to save to JSONBin:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error saving to JSONBin:', error);
+                } finally {
+                    isSyncing = false;
+                    hideSyncStatus();
+                }
+            }
 
             // Update last updated date
             document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', { 
@@ -1211,6 +1307,30 @@
             month: 'long', 
             day: 'numeric' 
         });
+
+        // Sync status helpers
+        function showSyncStatus(message) {
+            const syncStatus = document.getElementById('syncStatus');
+            const syncStatusText = document.getElementById('syncStatusText');
+            syncStatusText.textContent = message;
+            syncStatus.classList.add('show');
+        }
+
+        function hideSyncStatus() {
+            const syncStatus = document.getElementById('syncStatus');
+            setTimeout(() => {
+                syncStatus.classList.remove('show');
+            }, 500);
+        }
+
+        // Auto-refresh data every 30 seconds to get updates from other users
+        setInterval(async () => {
+            // Only refresh if not currently editing
+            const modal = document.getElementById('featureModal');
+            if (modal.style.display !== 'block') {
+                await loadFeaturesData();
+            }
+        }, 30000);
 
         // Initialize on page load
         loadFeaturesData();
