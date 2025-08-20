@@ -535,10 +535,6 @@
                 <div class="stat-value" id="prdRequired">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Mocks Required</div>
-                <div class="stat-value" id="mockRequired">0</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-label">Figmas Required</div>
                 <div class="stat-value" id="figmaRequired">0</div>
             </div>
@@ -581,7 +577,6 @@
                         <th style="width: 6%;">External</th>
                         <th style="width: 6%;">PRFAQ</th>
                         <th style="width: 6%;">PRD</th>
-                        <th style="width: 6%;">Mock</th>
                         <th style="width: 6%;">Figma</th>
                         <th style="width: 8%;">Architecture</th>
                         <th style="width: 6%;">Actions</th>
@@ -632,10 +627,6 @@
                         <div class="checkbox-item">
                             <input type="checkbox" id="featurePrd">
                             <label for="featurePrd">PRD</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featureMock">
-                            <label for="featureMock">Mock</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="featureFigma">
@@ -788,7 +779,6 @@
                 
                 const prfaqChecked = feature.prfaqStatus === 'complete' ? 'checked' : '';
                 const prdChecked = feature.prd ? 'checked' : '';
-                const mockChecked = feature.mock ? 'checked' : '';
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
 
@@ -809,9 +799,6 @@
                     </td>
                     <td class="facing-cell">
                         <input type="checkbox" data-feature-id="${feature.id}" data-field="prd" ${prdChecked} onchange="updateCheckboxStatus(${feature.id}, 'prd', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
-                    </td>
-                    <td class="facing-cell">
-                        <input type="checkbox" data-feature-id="${feature.id}" data-field="mock" ${mockChecked} onchange="updateCheckboxStatus(${feature.id}, 'mock', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
                     </td>
                     <td class="facing-cell">
                         <input type="checkbox" data-feature-id="${feature.id}" data-field="figma" ${figmaChecked} onchange="updateCheckboxStatus(${feature.id}, 'figma', this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
@@ -920,7 +907,6 @@
             const rows = document.querySelectorAll('#featureTableBody tr:not([style*="display: none"])');
             let prfaqRequired = 0;
             let prdRequired = 0;
-            let mockRequired = 0;
             let figmaRequired = 0;
             let architectureRequired = 0;
 
@@ -931,7 +917,6 @@
                 if (feature) {
                     if (feature.prfaqStatus !== 'complete') prfaqRequired++;
                     if (!feature.prd) prdRequired++;
-                    if (!feature.mock) mockRequired++;
                     if (!feature.figma) figmaRequired++;
                     if (!feature.architecture) architectureRequired++;
                 }
@@ -940,7 +925,6 @@
             document.getElementById('totalFeatures').textContent = rows.length;
             document.getElementById('prfaqRequired').textContent = prfaqRequired;
             document.getElementById('prdRequired').textContent = prdRequired;
-            document.getElementById('mockRequired').textContent = mockRequired;
             document.getElementById('figmaRequired').textContent = figmaRequired;
             document.getElementById('architectureRequired').textContent = architectureRequired;
         }
@@ -1037,7 +1021,6 @@
                 document.getElementById('featureExternal').checked = feature.external;
                 document.getElementById('featurePrfaq').checked = feature.prfaqStatus === 'complete';
                 document.getElementById('featurePrd').checked = feature.prd || false;
-                document.getElementById('featureMock').checked = feature.mock || false;
                 document.getElementById('featureFigma').checked = feature.figma || false;
                 document.getElementById('featureArchitecture').checked = feature.architecture || false;
                 openModal(true);
@@ -1058,7 +1041,6 @@
                     feature.external = document.getElementById('featureExternal').checked;
                     feature.prfaqStatus = document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started';
                     feature.prd = document.getElementById('featurePrd').checked;
-                    feature.mock = document.getElementById('featureMock').checked;
                     feature.figma = document.getElementById('featureFigma').checked;
                     feature.architecture = document.getElementById('featureArchitecture').checked;
                 }
@@ -1073,7 +1055,6 @@
                     external: document.getElementById('featureExternal').checked,
                     prfaqStatus: document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started',
                     prd: document.getElementById('featurePrd').checked,
-                    mock: document.getElementById('featureMock').checked,
                     figma: document.getElementById('featureFigma').checked,
                     architecture: document.getElementById('featureArchitecture').checked,
                     order: features.length + 1
