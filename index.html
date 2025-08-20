@@ -498,31 +498,7 @@
             line-height: 1.4;
         }
 
-        .check-icon {
-            color: #10b981;
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .no-check {
-            color: #4a5568;
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .check-icon:hover {
-            transform: scale(1.2);
-            color: #059669;
-        }
-
-        .no-check:hover {
-            transform: scale(1.2);
-            color: #10b981;
-        }
-
-        /* Custom checkbox styling for other columns */
+        /* Custom checkbox styling for all checkbox columns */
         .custom-checkbox {
             width: 24px;
             height: 24px;
@@ -1038,14 +1014,14 @@
                     </td>
                     <td class="feature-description">${feature.description}</td>
                     <td class="facing-cell">
-                        <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus no-check'}" 
-                           onclick="toggleFacing(${feature.id}, 'internal')"
-                           title="Click to toggle"></i>
+                        <div class="custom-checkbox ${feature.internal ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'internal', this)"
+                             title="Internal"></div>
                     </td>
                     <td class="facing-cell">
-                        <i class="fas fa-${feature.external ? 'check check-icon' : 'minus no-check'}" 
-                           onclick="toggleFacing(${feature.id}, 'external')"
-                           title="Click to toggle"></i>
+                        <div class="custom-checkbox ${feature.external ? 'checked' : ''}" 
+                             onclick="toggleCheckbox(${feature.id}, 'external', this)"
+                             title="External"></div>
                     </td>
                     <td class="facing-cell">
                         <div class="custom-checkbox ${prfaqChecked ? 'checked' : ''}" 
@@ -1231,18 +1207,7 @@
             });
         });
 
-        // Toggle facing (internal/external) status
-        function toggleFacing(featureId, field) {
-            const feature = features.find(f => f.id === featureId);
-            if (feature) {
-                feature[field] = !feature[field];
-                updateStats();
-                saveFeaturesData();
-                renderTable();
-            }
-        }
-
-        // Toggle custom checkbox
+        // Toggle custom checkbox for all fields
         function toggleCheckbox(featureId, field, element) {
             const feature = features.find(f => f.id === featureId);
             if (feature) {
