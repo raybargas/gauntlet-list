@@ -1307,26 +1307,43 @@
                 e.stopPropagation();
             }
             
+            // Clean up drag classes
+            draggedElement.classList.remove('dragging');
+            const rows = document.querySelectorAll('#featureTableBody tr');
+            rows.forEach(row => row.classList.remove('drag-over'));
+            
+            // Get the target element we're dropping on
+            let targetElement = e.target;
+            while (targetElement && targetElement.tagName !== 'TR') {
+                targetElement = targetElement.parentElement;
+            }
+            
             // Don't do anything if dropping on itself
-            if (draggedElement === this) {
+            if (draggedElement === targetElement || !targetElement) {
+                renderTable();
                 return false;
             }
             
-            // Now actually move the element
-            const afterElement = getDragAfterElement(e.clientY);
+            // Get the tbody and current position
             const tbody = document.getElementById('featureTableBody');
+            const allRows = [...tbody.querySelectorAll('tr')];
+            const draggedIndex = allRows.indexOf(draggedElement);
+            const targetIndex = allRows.indexOf(targetElement);
             
-            if (afterElement == null) {
-                tbody.appendChild(draggedElement);
-            } else if (afterElement !== draggedElement) {
-                tbody.insertBefore(draggedElement, afterElement);
+            // Move the element in the DOM
+            if (draggedIndex < targetIndex) {
+                // Dragging down - insert after target
+                targetElement.parentNode.insertBefore(draggedElement, targetElement.nextSibling);
+            } else {
+                // Dragging up - insert before target
+                targetElement.parentNode.insertBefore(draggedElement, targetElement);
             }
             
             // Update the features array with new order based on DOM
             setTimeout(() => {
-                const rows = document.querySelectorAll('#featureTableBody tr');
+                const updatedRows = document.querySelectorAll('#featureTableBody tr');
                 const newOrder = [];
-                rows.forEach((row, index) => {
+                updatedRows.forEach((row, index) => {
                     const featureId = parseInt(row.dataset.featureId);
                     const feature = features.find(f => f.id === featureId);
                     if (feature) {
