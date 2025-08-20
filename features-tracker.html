@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rev.io PSA Gauntlet Program - Features Tracker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .program-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .tier-1 { background: #d4edda; }
+        .tier-2 { background: #fff3cd; }
+        .tier-3 { background: #f8d7da; }
+        .tier-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .tier-1 .tier-badge { background: #28a745; color: white; }
+        .tier-2 .tier-badge { background: #ffc107; color: #333; }
+        .tier-3 .tier-badge { background: #dc3545; color: white; }
+        .checkbox-cell {
+            text-align: center;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        input[type="checkbox"]:checked {
+            accent-color: #28a745;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 4px;
+        }
+        .feasibility {
+            font-size: 0.9em;
+            color: #777;
+        }
+        .timeline {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .recommendations {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .recommendations h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .rec-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .rec-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #d1e9f1;
+        }
+        .rec-list li:last-child {
+            border-bottom: none;
+        }
+        .rec-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #3498db;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rev.io PSA Gauntlet Program - Features Tracker</h1>
+    
+    <div class="program-info">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Duration:</span>
+                <span>6 weeks (3 remote + 3 on-site)</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Participants:</span>
+                <span>5 team members</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Projects per Person:</span>
+                <span>2 modules each</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Start Date:</span>
+                <span>September 2025</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">On-site Begins:</span>
+                <span>September 22, 2025</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">PSA Launch:</span>
+                <span>September 1, 2025</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendations">
+        <h2>Top 5 Recommendations</h2>
+        <ol class="rec-list">
+            <li><span class="rec-number">1</span><strong>Universal Search</strong> - Intelligent search across all PSA entities</li>
+            <li><span class="rec-number">2</span><strong>Mobile App</strong> - Field service focused with offline sync</li>
+            <li><span class="rec-number">3</span><strong>Workflows & Notifications</strong> - Visual workflow builder with automation</li>
+            <li><span class="rec-number">4</span><strong>Metered Usage Billing</strong> - Flexible usage tracking and rating engine</li>
+            <li><span class="rec-number">5</span><strong>Commerce Hub (Phase 2)</strong> - Full procurement and payment processing</li>
+        </ol>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Tier</th>
+                <th>Description</th>
+                <th>Feasibility</th>
+                <th>Timeline</th>
+                <th>PR FAQ Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="tier-1">
+                <td>
+                    <strong>Universal Search</strong>
+                </td>
+                <td><span class="tier-badge">Tier 1</span></td>
+                <td>
+                    <div>Intelligent, fast search across all PSA entities</div>
+                    <div class="description">Includes filters, recent searches, and AI-powered suggestions</div>
+                </td>
+                <td class="feasibility">Can leverage existing data structures, add Elasticsearch/similar</td>
+                <td class="timeline">3-4 weeks core, 2 weeks refinement</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-1">
+                <td>
+                    <strong>Mobile App</strong>
+                </td>
+                <td><span class="tier-badge">Tier 1</span></td>
+                <td>
+                    <div>Field service focused mobile application</div>
+                    <div class="description">Tickets, time tracking, signature capture, photo uploads, offline sync</div>
+                </td>
+                <td class="feasibility">React Native or Flutter MVP achievable</td>
+                <td class="timeline">6 weeks for MVP</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-1">
+                <td>
+                    <strong>Workflows & Notifications</strong>
+                </td>
+                <td><span class="tier-badge">Tier 1</span></td>
+                <td>
+                    <div>Visual workflow builder with automation</div>
+                    <div class="description">Email/SMS/in-app notifications, MSP workflow templates</div>
+                </td>
+                <td class="feasibility">Build on existing event system</td>
+                <td class="timeline">3 weeks engine, 3 weeks UI</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-1">
+                <td>
+                    <strong>Metered Usage Billing</strong>
+                </td>
+                <td><span class="tier-badge">Tier 1</span></td>
+                <td>
+                    <div>Flexible usage tracking and rating engine</div>
+                    <div class="description">Track any metric: RMM endpoints, backup GB, API calls, licenses</div>
+                </td>
+                <td class="feasibility">Extends existing billing system</td>
+                <td class="timeline">2 weeks backend, 2 weeks integration, 2 weeks UI</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-1">
+                <td>
+                    <strong>Template Customization for Invoices</strong>
+                </td>
+                <td><span class="tier-badge">Tier 1</span></td>
+                <td>
+                    <div>Drag-drop invoice template builder</div>
+                    <div class="description">Professional appearance, branding control for customers</div>
+                </td>
+                <td class="feasibility">Template engine with visual builder</td>
+                <td class="timeline">4 weeks builder, 2 weeks templates</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-2">
+                <td>
+                    <strong>Commerce Hub (Phase 2)</strong>
+                </td>
+                <td><span class="tier-badge">Tier 2</span></td>
+                <td>
+                    <div>Procurement and payment processing for Commerce Hub</div>
+                    <div class="description">Phase 2 enables actual purchases (Phase 1: vendor browsing & lead gen)</div>
+                </td>
+                <td class="feasibility">Payment integration, order fulfillment, vendor APIs needed</td>
+                <td class="timeline">2 weeks payment, 2 weeks procurement, 2 weeks testing</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-2">
+                <td>
+                    <strong>Onboarding AI Agent</strong>
+                </td>
+                <td><span class="tier-badge">Tier 2</span></td>
+                <td>
+                    <div>AI-powered customer onboarding assistant</div>
+                    <div class="description">Guides setup, imports data, suggests configurations</div>
+                </td>
+                <td class="feasibility">Leverage existing Ask Rev.ii AI</td>
+                <td class="timeline">Tight but achievable with focus</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-2">
+                <td>
+                    <strong>Sales Opportunity Management</strong>
+                </td>
+                <td><span class="tier-badge">Tier 2</span></td>
+                <td>
+                    <div>Sales pipeline and opportunity tracking</div>
+                    <div class="description">CRM features integrated with existing accounts</div>
+                </td>
+                <td class="feasibility">Standard CRM features</td>
+                <td class="timeline">Core features in 6 weeks</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-2">
+                <td>
+                    <strong>Visualization Framework</strong>
+                </td>
+                <td><span class="tier-badge">Tier 2</span></td>
+                <td>
+                    <div>Visual insights for workflows, inventory, relationships</div>
+                    <div class="description">Mind-maps, flow diagrams, interactive dashboards</div>
+                </td>
+                <td class="feasibility">Use D3.js, React Flow libraries</td>
+                <td class="timeline">3 weeks framework, 3 weeks visualizations</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Project Management</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Enhanced project management capabilities</div>
+                    <div class="description">Core PSA feature enhancement</div>
+                </td>
+                <td class="feasibility">Scope might be too broad</td>
+                <td class="timeline">Uncertain within 6 weeks</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Commissions and Agents</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Commission calculation and agent management</div>
+                    <div class="description">Complex calculations and rules engine for sales teams</div>
+                </td>
+                <td class="feasibility">Complex business logic</td>
+                <td class="timeline">Challenging in 6 weeks</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Video Avatar for Ask Rev.ii</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>AI video avatar enhancement</div>
+                    <div class="description">Visual AI assistant for Ask Rev.ii</div>
+                </td>
+                <td class="feasibility">Requires AI/ML expertise</td>
+                <td class="timeline">Complex implementation</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Orders</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Order management system</div>
+                    <div class="description">Service delivery order processing</div>
+                </td>
+                <td class="feasibility">Deep integration required</td>
+                <td class="timeline">Extensive backend changes</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Data Migrations</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Data migration tools and processes</div>
+                    <div class="description">Critical for onboarding but complex</div>
+                </td>
+                <td class="feasibility">Error-prone, needs extensive testing</td>
+                <td class="timeline">6 weeks insufficient for reliability</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Reseller Framework</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Multi-tenant reseller capabilities</div>
+                    <div class="description">Opens new business models but complex architecture</div>
+                </td>
+                <td class="feasibility">Complex multi-tenant considerations</td>
+                <td class="timeline">Long-term architecture impact</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" checked onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Per-user List View Templates</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Customizable list view templates per user</div>
+                    <div class="description">UX improvement for personalized views</div>
+                </td>
+                <td class="feasibility">Straightforward but lower priority</td>
+                <td class="timeline">Quick implementation</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+            <tr class="tier-3">
+                <td>
+                    <strong>Importer Modernization Tool</strong>
+                </td>
+                <td><span class="tier-badge">Tier 3</span></td>
+                <td>
+                    <div>Modern data import tools</div>
+                    <div class="description">Being developed already</div>
+                </td>
+                <td class="feasibility">Already in development</td>
+                <td class="timeline">N/A - In progress</td>
+                <td class="checkbox-cell">
+                    <input type="checkbox" onclick="saveState()">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Load saved checkbox states from localStorage
+        function loadState() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                const savedState = localStorage.getItem(`prfaq_${index}`);
+                if (savedState !== null) {
+                    checkbox.checked = savedState === 'true';
+                }
+            });
+        }
+
+        // Save checkbox states to localStorage
+        function saveState() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                localStorage.setItem(`prfaq_${index}`, checkbox.checked);
+            });
+        }
+
+        // Load states when page loads
+        document.addEventListener('DOMContentLoaded', loadState);
+    </script>
+</body>
+</html>
