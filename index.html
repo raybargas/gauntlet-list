@@ -430,11 +430,16 @@
         .feature-table {
             width: 100%;
             border-collapse: collapse;
+            position: relative;
         }
 
         .feature-table thead {
             background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .feature-table th {
@@ -490,6 +495,16 @@
         .feature-name {
             font-weight: 500;
             color: #f7fafc;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-name-text {
+            flex: 1;
+            padding-left: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .feature-description {
@@ -695,7 +710,7 @@
                 <div class="stat-value" id="figmaRequired">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Architecture Required</div>
+                <div class="stat-label">ARCH Required</div>
                 <div class="stat-value" id="architectureRequired">0</div>
             </div>
         </div>
@@ -730,15 +745,15 @@
             <table class="feature-table">
                 <thead>
                     <tr>
-                        <th style="width: 20%;">Feature</th>
-                        <th style="width: 30%;">Description</th>
-                        <th style="width: 6%;">Internal</th>
-                        <th style="width: 6%;">External</th>
-                        <th style="width: 6%;">PRFAQ</th>
-                        <th style="width: 6%;">PRD</th>
-                        <th style="width: 6%;">Figma</th>
-                        <th style="width: 8%;">Architecture</th>
-                        <th style="width: 8%;">Actions</th>
+                        <th style="width: 25%;">Feature</th>
+                        <th style="width: 35%;">Description</th>
+                        <th style="width: 5%;">Internal</th>
+                        <th style="width: 5%;">External</th>
+                        <th style="width: 5%;">PRFAQ</th>
+                        <th style="width: 5%;">PRD</th>
+                        <th style="width: 5%;">Figma</th>
+                        <th style="width: 5%;">ARCH</th>
+                        <th style="width: 10%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="featureTableBody">
@@ -826,7 +841,7 @@
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="featureArchitecture">
-                            <label for="featureArchitecture">Architecture</label>
+                            <label for="featureArchitecture">ARCH</label>
                         </div>
                     </div>
                 </div>
@@ -1008,7 +1023,7 @@
                 row.innerHTML = `
                     <td class="feature-name">
                         <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
-                        ${feature.name}
+                        <span class="feature-name-text">${feature.name}</span>
                     </td>
                     <td class="feature-description">${feature.description}</td>
                     <td class="facing-cell">
@@ -1039,7 +1054,7 @@
                     <td class="facing-cell">
                         <i class="fas fa-${architectureChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'architecture')"
-                           title="Architecture - Click to toggle"></i>
+                           title="ARCH - Click to toggle"></i>
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
