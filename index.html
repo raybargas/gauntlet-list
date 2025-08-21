@@ -727,6 +727,9 @@
         .drag-handle {
             cursor: grab;
             user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         .drag-handle:active {
@@ -736,6 +739,14 @@
         
         .feature-table tbody tr.dragging .drag-handle {
             cursor: grabbing;
+        }
+        
+        /* Prevent text selection during drag */
+        .feature-table tbody tr.feature-main-row {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .drag-handle:hover {
@@ -1361,7 +1372,6 @@
                 row.classList.add('feature-main-row');
                 if (isTop15) row.classList.add('top-15');
                 row.dataset.featureId = feature.id;
-                row.draggable = true;
                 
                 const prfaqChecked = feature.prfaqStatus === 'complete' ? 'checked' : '';
                 const prdChecked = feature.prd ? 'checked' : '';
@@ -1526,6 +1536,31 @@
             const rows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
             
             rows.forEach((row) => {
+                // Make the row draggable
+                row.draggable = true;
+                
+                // Prevent drag unless initiated from handle
+                row.addEventListener('mousedown', function(e) {
+                    // Check if the mousedown is on the drag handle
+                    let isDragHandle = false;
+                    let element = e.target;
+                    while (element && element !== this) {
+                        if (element.classList && element.classList.contains('drag-handle')) {
+                            isDragHandle = true;
+                            break;
+                        }
+                        element = element.parentElement;
+                    }
+                    
+                    // Set draggable based on whether we clicked the handle
+                    this.draggable = isDragHandle;
+                    
+                    // Prevent text selection if dragging
+                    if (isDragHandle) {
+                        e.preventDefault();
+                    }
+                });
+                
                 row.addEventListener('dragstart', handleDragStart);
                 row.addEventListener('dragend', handleDragEnd);
                 row.addEventListener('dragover', handleDragOver);
