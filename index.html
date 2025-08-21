@@ -601,8 +601,39 @@
         .feature-table tbody tr {
             border-bottom: 1px solid #2d3748;
             transition: all 0.2s;
-            cursor: move;
+            cursor: pointer;
             position: relative;
+        }
+        
+        .feature-table tbody tr.expanded {
+            background: #1e2633;
+        }
+        
+        .description-drawer {
+            display: none;
+            padding: 1rem 1.5rem;
+            background: #141922;
+            border-top: 1px solid #2d3748;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .description-drawer.show {
+            display: table-row;
+        }
+        
+        .expand-icon {
+            transition: transform 0.2s;
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .expanded .expand-icon {
+            transform: rotate(90deg);
+            color: #5ad1f2;
         }
         
         /* Highlight first 15 rows for Gauntlet Sprint */
@@ -927,9 +958,8 @@
                 <thead>
                     <tr>
                         <th style="width: 3%;">#</th>
-                        <th style="width: 18%;">Feature</th>
-                        <th style="width: 28%;">Description</th>
-                        <th style="width: 3%;">Link</th>
+                        <th style="width: 35%;">Feature</th>
+                        <th style="width: 4%;">Link</th>
                         <th style="width: 6%;">Internal</th>
                         <th style="width: 6%;">External</th>
                         <th style="width: 6%;">PRFAQ</th>
@@ -1286,11 +1316,11 @@
                 const rowNumber = index + 1;
                 row.innerHTML = `
                     <td style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'};">${rowNumber}</td>
-                    <td class="feature-name">
-                        <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                    <td class="feature-name" onclick="toggleDescription(${feature.id}, event)">
+                        <i class="fas fa-chevron-right expand-icon"></i>
+                        <span class="drag-handle" onclick="event.stopPropagation()"><i class="fas fa-grip-vertical"></i></span>
                         <span class="feature-name-text">${feature.name}</span>
                     </td>
-                    <td class="feature-description">${feature.description}</td>
                     <td style="text-align: center;">
                         ${feature.url ? `<a href="${feature.url}" target="_blank" title="Open link" style="color: #5ad1f2; font-size: 1.1rem;"><i class="fas fa-external-link-alt"></i></a>` : ''}
                     </td>
@@ -1371,6 +1401,21 @@
                 `;
 
                 tbody.appendChild(row);
+                
+                // Add description drawer row
+                const descRow = document.createElement('tr');
+                descRow.className = 'description-drawer';
+                descRow.id = `desc-${feature.id}`;
+                descRow.style.display = 'none';
+                descRow.innerHTML = `
+                    <td colspan="11" style="padding: 0;">
+                        <div style="padding: 1rem 1.5rem; background: #141922; border-top: 1px solid #2d3748;">
+                            <strong style="color: #5ad1f2; font-size: 0.8rem;">DESCRIPTION:</strong>
+                            <div style="margin-top: 0.5rem; color: #a0aec0;">${feature.description}</div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(descRow);
             });
 
             addDragEventListeners();
@@ -1572,7 +1617,8 @@
             
             rows.forEach(row => {
                 const featureName = row.querySelector('.feature-name').textContent.toLowerCase();
-                const description = row.querySelector('.feature-description').textContent.toLowerCase();
+                const featureData = features.find(f => f.id === parseInt(row.dataset.featureId));
+                const description = featureData ? featureData.description.toLowerCase() : '';
                 const matches = featureName.includes(searchTerm) || description.includes(searchTerm);
                 row.style.display = matches ? '' : 'none';
             });
@@ -1581,6 +1627,25 @@
         });
 
 
+        // Toggle description drawer
+        window.toggleDescription = function(featureId, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const row = document.querySelector(`tr[data-feature-id="${featureId}"]`);
+            const drawer = document.getElementById(`desc-${featureId}`);
+            
+            if (row && drawer) {
+                row.classList.toggle('expanded');
+                if (drawer.style.display === 'none' || drawer.style.display === '') {
+                    drawer.style.display = 'table-row';
+                } else {
+                    drawer.style.display = 'none';
+                }
+            }
+        }
+        
         // Toggle icon for all checkbox fields
         window.toggleIcon = function(featureId, field) {
             const feature = features.find(f => f.id === featureId);
