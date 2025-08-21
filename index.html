@@ -735,7 +735,14 @@
         }
         
         /* Prevent text selection during drag */
-        .feature-table tbody tr.feature-main-row {
+        .feature-table tbody tr {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        .feature-table tbody tr * {
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -1375,7 +1382,7 @@
                     <td style="text-align: center; font-weight: 600; color: ${isTop15 ? '#5ad1f2' : '#6b7280'}; padding: 0.25rem 0.5rem;">${rowNumber}</td>
                     <td class="feature-cell">
                         <div style="display: flex; align-items: center;">
-                            <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                            <span class="drag-handle" style="cursor: grab; padding: 0 0.5rem;"><i class="fas fa-grip-vertical"></i></span>
                             <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
                         </div>
                     </td>
@@ -1489,33 +1496,37 @@
             const rows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
             
             rows.forEach((row) => {
-                // Make the row draggable
-                row.draggable = true;
+                // Initially not draggable
+                row.draggable = false;
                 
-                // Prevent drag unless initiated from handle
-                row.addEventListener('mousedown', function(e) {
-                    // Check if the mousedown is on the drag handle
-                    let isDragHandle = false;
-                    let element = e.target;
-                    while (element && element !== this) {
-                        if (element.classList && element.classList.contains('drag-handle')) {
-                            isDragHandle = true;
-                            break;
-                        }
-                        element = element.parentElement;
-                    }
+                // Find the drag handle in this row
+                const handle = row.querySelector('.drag-handle');
+                if (handle) {
+                    // Make handle explicitly draggable
+                    handle.addEventListener('mousedown', function(e) {
+                        e.preventDefault(); // Prevent text selection
+                        e.stopPropagation();
+                        row.draggable = true;
+                        
+                        // Force start drag on next tick
+                        setTimeout(() => {
+                            row.draggable = true;
+                        }, 0);
+                    });
                     
-                    // Set draggable based on whether we clicked the handle
-                    this.draggable = isDragHandle;
-                    
-                    // Prevent text selection if dragging
-                    if (isDragHandle) {
-                        e.preventDefault();
-                    }
-                });
+                    // Reset draggable on mouseup
+                    handle.addEventListener('mouseup', function(e) {
+                        setTimeout(() => {
+                            row.draggable = false;
+                        }, 100);
+                    });
+                }
                 
                 row.addEventListener('dragstart', handleDragStart);
-                row.addEventListener('dragend', handleDragEnd);
+                row.addEventListener('dragend', function(e) {
+                    handleDragEnd.call(this, e);
+                    this.draggable = false;
+                });
                 row.addEventListener('dragover', handleDragOver);
                 row.addEventListener('drop', handleDrop);
                 row.addEventListener('dragleave', handleDragLeave);
