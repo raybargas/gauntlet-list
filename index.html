@@ -384,6 +384,22 @@
         .form-group select option {
             background: #0f1419;
             color: #e0e6ed;
+            padding: 0.5rem;
+        }
+        
+        .form-group select[multiple] {
+            background-image: none;
+            padding: 0.5rem;
+            height: auto;
+        }
+        
+        .form-group select[multiple] option:checked {
+            background: linear-gradient(90deg, #5ad1f2 0%, #2d5a87 100%);
+            color: white;
+        }
+        
+        .form-group select[multiple]:focus option:checked {
+            background: linear-gradient(90deg, #5ad1f2 0%, #2d5a87 100%);
         }
 
         .form-group input[type="text"]:focus,
@@ -986,9 +1002,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="featureProductManager">Stakeholder</label>
-                    <select id="featureProductManager">
-                        <option value="">-- Select Stakeholder --</option>
+                    <label for="featureProductManager">Stakeholders (Select multiple with Ctrl/Cmd)</label>
+                    <select id="featureProductManager" multiple size="8">
                         <option value="Amanda Hill">Amanda Hill</option>
                         <option value="Fran Timothy">Fran Timothy</option>
                         <option value="Josh Owen">Josh Owen</option>
@@ -1284,7 +1299,11 @@
                     </td>
                     <td style="text-align: center; font-size: 0.85rem; color: #a0aec0;">
                         ${feature.attendee ? `<div style="color: #5ad1f2; font-weight: 500;">${feature.attendee.split(' ')[0]}</div>` : ''}
-                        ${feature.productManager ? `<div style="color: #10b981; font-size: 0.8rem;">${feature.productManager.split(' ')[0]}</div>` : ''}
+                        ${feature.productManager ? 
+                            (Array.isArray(feature.productManager) ? 
+                                feature.productManager.map(pm => `<div style="color: #10b981; font-size: 0.75rem;">${pm.split(' ')[0]}</div>`).join('') :
+                                `<div style="color: #10b981; font-size: 0.8rem;">${feature.productManager.split(' ')[0]}</div>`
+                            ) : ''}
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
@@ -1606,7 +1625,13 @@
                 document.getElementById('featureDescription').value = feature.description;
                 document.getElementById('featureUrl').value = feature.url || '';
                 document.getElementById('featureAttendee').value = feature.attendee || '';
-                document.getElementById('featureProductManager').value = feature.productManager || '';
+                // Set selected stakeholders
+                const pmSelect = document.getElementById('featureProductManager');
+                const stakeholders = Array.isArray(feature.productManager) ? feature.productManager : 
+                                   (feature.productManager ? [feature.productManager] : []);
+                Array.from(pmSelect.options).forEach(option => {
+                    option.selected = stakeholders.includes(option.value);
+                });
                 document.getElementById('featureInternal').checked = feature.internal;
                 document.getElementById('featureExternal').checked = feature.external;
                 document.getElementById('featurePrfaq').checked = feature.prfaqStatus === 'complete';
@@ -1629,7 +1654,8 @@
                     feature.description = document.getElementById('featureDescription').value;
                     feature.url = document.getElementById('featureUrl').value;
                     feature.attendee = document.getElementById('featureAttendee').value;
-                    feature.productManager = document.getElementById('featureProductManager').value;
+                    const selectedOptions = Array.from(document.getElementById('featureProductManager').selectedOptions);
+                    feature.productManager = selectedOptions.map(option => option.value);
                     feature.internal = document.getElementById('featureInternal').checked;
                     feature.external = document.getElementById('featureExternal').checked;
                     feature.prfaqStatus = document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started';
@@ -1646,7 +1672,7 @@
                     description: document.getElementById('featureDescription').value,
                     url: document.getElementById('featureUrl').value,
                     attendee: document.getElementById('featureAttendee').value,
-                    productManager: document.getElementById('featureProductManager').value,
+                    productManager: Array.from(document.getElementById('featureProductManager').selectedOptions).map(option => option.value),
                     internal: document.getElementById('featureInternal').checked,
                     external: document.getElementById('featureExternal').checked,
                     prfaqStatus: document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started',
