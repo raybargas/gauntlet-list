@@ -610,15 +610,12 @@
             vertical-align: top;
         }
         
-        .feature-description {
-            color: #8892a0;
-            font-size: 0.75rem;
-            line-height: 1.4;
-            margin-top: 0.25rem;
-            padding-right: 1rem;
-            background: #141922;
-            padding: 0.4rem 0.6rem;
-            border-radius: 4px;
+        .feature-table tbody tr:nth-child(even) {
+            border-bottom: 2px solid #2d3748;
+        }
+        
+        .feature-table tbody tr:nth-child(odd) {
+            border-bottom: none;
         }
         
         .description-link {
@@ -1315,15 +1312,11 @@
 
                 const rowNumber = index + 1;
                 row.innerHTML = `
-                    <td style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'}; vertical-align: middle;">${rowNumber}</td>
-                    <td class="feature-cell">
+                    <td rowspan="2" style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'}; vertical-align: top; padding-top: 0.75rem;">${rowNumber}</td>
+                    <td class="feature-cell" style="padding-bottom: 0.25rem;">
                         <div style="display: flex; align-items: center;">
                             <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
                             <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
-                        </div>
-                        <div class="feature-description">
-                            ${feature.description}
-                            ${feature.url ? `<a href="${feature.url}" target="_blank" class="description-link" title="Open link"><i class="fas fa-external-link-alt"></i></a>` : ''}
                         </div>
                     </td>
                     <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
@@ -1356,7 +1349,7 @@
                            onclick="toggleIcon(${feature.id}, 'architecture')"
                            title="ARCH - Click to toggle"></i>
                     </td>
-                    <td style="text-align: left; padding-left: 0.5rem; font-size: 0.75rem; color: #a0aec0; vertical-align: middle;">
+                    <td rowspan="2" style="text-align: left; padding-left: 0.5rem; font-size: 0.75rem; color: #a0aec0; vertical-align: top; padding-top: 0.75rem;">
                         ${feature.attendee ? (() => {
                             const parts = feature.attendee.split(' ');
                             const firstName = parts[0];
@@ -1390,7 +1383,7 @@
                             return '';
                         })() : ''}
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td rowspan="2" class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <div class="action-buttons">
                             <button class="action-btn edit-btn" onclick="editFeature(${feature.id})" data-tooltip="Edit Feature">
                                 <i class="fas fa-pen"></i>
@@ -1403,6 +1396,20 @@
                 `;
 
                 tbody.appendChild(row);
+                
+                // Add description row that spans multiple columns
+                const descRow = document.createElement('tr');
+                descRow.dataset.featureId = feature.id + '-desc';
+                descRow.innerHTML = `
+                    <td colspan="7" style="padding: 0.5rem 1rem 1rem 1rem; border-top: none;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem; color: #8892a0; font-size: 0.75rem; line-height: 1.5;">
+                            <span style="color: #5ad1f2; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; margin-top: 2px;">Description:</span>
+                            <span style="flex: 1;">${feature.description}</span>
+                            ${feature.url ? `<a href="${feature.url}" target="_blank" style="color: #5ad1f2; font-size: 0.85rem; opacity: 0.8; transition: opacity 0.2s;" title="Open link" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(descRow);
             });
 
             addDragEventListeners();
@@ -1414,14 +1421,18 @@
         let lastDragOverElement = null;
 
         function addDragEventListeners() {
+            // Only add drag listeners to main feature rows (not description rows)
             const rows = document.querySelectorAll('#featureTableBody tr');
             
-            rows.forEach(row => {
-                row.addEventListener('dragstart', handleDragStart);
-                row.addEventListener('dragend', handleDragEnd);
-                row.addEventListener('dragover', handleDragOver);
-                row.addEventListener('drop', handleDrop);
-                row.addEventListener('dragleave', handleDragLeave);
+            rows.forEach((row, index) => {
+                // Only add drag listeners to odd rows (main feature rows, index 0, 2, 4, etc.)
+                if (index % 2 === 0) {
+                    row.addEventListener('dragstart', handleDragStart);
+                    row.addEventListener('dragend', handleDragEnd);
+                    row.addEventListener('dragover', handleDragOver);
+                    row.addEventListener('drop', handleDrop);
+                    row.addEventListener('dragleave', handleDragLeave);
+                }
             });
         }
 
@@ -1494,6 +1505,16 @@
                 targetElement = targetElement.parentElement;
             }
             
+            // Make sure we're only working with main feature rows
+            if (targetElement && targetElement.nextSibling && targetElement.nextSibling.dataset && 
+                targetElement.nextSibling.dataset.featureId && targetElement.nextSibling.dataset.featureId.includes('-desc')) {
+                // Target is already a main row, good
+            } else if (targetElement && targetElement.dataset && targetElement.dataset.featureId && 
+                       targetElement.dataset.featureId.includes('-desc')) {
+                // Target is a description row, get the previous main row
+                targetElement = targetElement.previousSibling;
+            }
+            
             // Don't do anything if dropping on itself or no valid target
             if (!draggedElement || draggedElement === targetElement || !targetElement) {
                 lastDragOverElement = null;
@@ -1501,36 +1522,41 @@
                 return false;
             }
             
-            // Get the tbody and current position
-            const tbody = document.getElementById('featureTableBody');
-            const allRows = [...tbody.querySelectorAll('tr')];
-            const draggedIndex = allRows.indexOf(draggedElement);
-            const targetIndex = allRows.indexOf(targetElement);
+            // Get the associated description row for the dragged element
+            const draggedDescRow = draggedElement.nextSibling;
+            const targetDescRow = targetElement.nextSibling;
             
-            // Move the element in the DOM based on the drop position
+            // Get the tbody
+            const tbody = document.getElementById('featureTableBody');
+            
+            // Move both rows based on the drop position
             const rect = targetElement.getBoundingClientRect();
             const midpoint = rect.top + rect.height / 2;
             
             if (e.clientY < midpoint) {
-                // Drop in upper half - insert before
-                targetElement.parentNode.insertBefore(draggedElement, targetElement);
+                // Drop in upper half - insert before target
+                tbody.insertBefore(draggedElement, targetElement);
+                tbody.insertBefore(draggedDescRow, targetElement);
             } else {
-                // Drop in lower half - insert after
-                targetElement.parentNode.insertBefore(draggedElement, targetElement.nextSibling);
+                // Drop in lower half - insert after target's description row
+                tbody.insertBefore(draggedElement, targetDescRow.nextSibling);
+                tbody.insertBefore(draggedDescRow, draggedElement.nextSibling);
             }
             
             // Update the features array with new order based on DOM
             setTimeout(() => {
                 const updatedRows = document.querySelectorAll('#featureTableBody tr');
                 const newOrder = [];
-                updatedRows.forEach((row, index) => {
+                // Process only main feature rows (every other row)
+                for (let i = 0; i < updatedRows.length; i += 2) {
+                    const row = updatedRows[i];
                     const featureId = parseInt(row.dataset.featureId);
                     const feature = features.find(f => f.id === featureId);
                     if (feature) {
-                        feature.order = index + 1;
+                        feature.order = (i / 2) + 1;
                         newOrder.push(feature);
                     }
-                });
+                }
                 
                 // Update features array
                 features = newOrder;
@@ -1570,26 +1596,29 @@
 
         // Update statistics - Top 15 only
         function updateStats() {
-            const rows = document.querySelectorAll('#featureTableBody tr:not([style*="display: none"])');
+            const allRows = document.querySelectorAll('#featureTableBody tr');
             let prfaqRequired = 0;
             let prdRequired = 0;
             let figmaRequired = 0;
             let architectureRequired = 0;
 
-            // Only count the first 15 visible rows
-            const top15Rows = Array.from(rows).slice(0, 15);
-            
-            top15Rows.forEach(row => {
-                const featureId = parseInt(row.dataset.featureId);
-                const feature = features.find(f => f.id === featureId);
-                
-                if (feature) {
-                    if (feature.prfaqStatus !== 'complete') prfaqRequired++;
-                    if (!feature.prd) prdRequired++;
-                    if (!feature.figma) figmaRequired++;
-                    if (!feature.architecture) architectureRequired++;
+            // Only count the first 15 visible main feature rows
+            let visibleCount = 0;
+            for (let i = 0; i < allRows.length && visibleCount < 15; i += 2) {
+                const row = allRows[i];
+                if (row && row.style.display !== 'none') {
+                    const featureId = parseInt(row.dataset.featureId);
+                    const feature = features.find(f => f.id === featureId);
+                    
+                    if (feature) {
+                        if (feature.prfaqStatus !== 'complete') prfaqRequired++;
+                        if (!feature.prd) prdRequired++;
+                        if (!feature.figma) figmaRequired++;
+                        if (!feature.architecture) architectureRequired++;
+                        visibleCount++;
+                    }
                 }
-            });
+            }
 
             document.getElementById('prfaqRequired').textContent = prfaqRequired;
             document.getElementById('prdRequired').textContent = prdRequired;
@@ -1602,13 +1631,25 @@
             const searchTerm = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#featureTableBody tr');
             
-            rows.forEach(row => {
-                const featureName = row.querySelector('.feature-name').textContent.toLowerCase();
-                const featureData = features.find(f => f.id === parseInt(row.dataset.featureId));
-                const description = featureData ? featureData.description.toLowerCase() : '';
-                const matches = featureName.includes(searchTerm) || description.includes(searchTerm);
-                row.style.display = matches ? '' : 'none';
-            });
+            // Process main feature rows (every other row)
+            for (let i = 0; i < rows.length; i += 2) {
+                const row = rows[i];
+                const descRow = rows[i + 1];
+                
+                const featureNameElement = row.querySelector('.feature-name-text');
+                if (featureNameElement) {
+                    const featureName = featureNameElement.textContent.toLowerCase();
+                    const featureData = features.find(f => f.id === parseInt(row.dataset.featureId));
+                    const description = featureData ? featureData.description.toLowerCase() : '';
+                    const matches = featureName.includes(searchTerm) || description.includes(searchTerm);
+                    
+                    // Show/hide both the main row and description row together
+                    row.style.display = matches ? '' : 'none';
+                    if (descRow) {
+                        descRow.style.display = matches ? '' : 'none';
+                    }
+                }
+            }
             
             updateStats();
         });
