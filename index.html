@@ -1425,7 +1425,7 @@
                             return `
                                 <div>
                                     <div style="color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Attendee</div>
-                                    <div style="color: #5ad1f2; font-size: 0.75rem; padding-left: 10px;" title="Gauntlet Attendee">${displayName}</div>
+                                    <div style="color: #5ad1f2; font-size: 0.75rem; margin-left: 12px;" title="Gauntlet Attendee">${displayName}</div>
                                 </div>`;
                         })() : ''}
                         ${(feature.attendee && feature.productManager) ? '<div style="border-top: 1px solid #374151; margin: 4px 0;"></div>' : ''}
@@ -1436,7 +1436,7 @@
                                 const firstName = parts[0];
                                 const lastInitial = parts[1] ? parts[1][0] : '';
                                 const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName;
-                                return `<div style="color: #10b981; font-size: 0.75rem; padding-left: 10px;" title="Stakeholder">${displayName}</div>`;
+                                return `<div style="color: #10b981; font-size: 0.75rem; margin-left: 12px;" title="Stakeholder">${displayName}</div>`;
                             }).join('');
                             
                             if (stakeholdersList) {
@@ -1444,7 +1444,7 @@
                                 return `
                                     <div>
                                         <div style="color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">${label}</div>
-                                        ${stakeholdersList}
+                                        <div>${stakeholdersList}</div>
                                     </div>`;
                             }
                             return '';
