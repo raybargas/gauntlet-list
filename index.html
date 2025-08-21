@@ -317,14 +317,35 @@
 
         .modal-content {
             background: #1a1f2e;
-            margin: 10% auto;
+            margin: 2% auto;
             padding: 2rem;
             border: 1px solid #2d3748;
             border-radius: 12px;
             width: 90%;
             max-width: 500px;
+            max-height: 95vh;
+            overflow-y: auto;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             animation: slideDown 0.3s;
+        }
+        
+        /* Custom scrollbar for modal */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: #0f1419;
+            border-radius: 4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #5ad1f2;
+            border-radius: 4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #4bb8d9;
         }
 
         @keyframes fadeIn {
