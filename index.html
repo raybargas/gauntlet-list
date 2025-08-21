@@ -601,39 +601,37 @@
         .feature-table tbody tr {
             border-bottom: 1px solid #2d3748;
             transition: all 0.2s;
-            cursor: pointer;
+            cursor: move;
             position: relative;
         }
         
-        .feature-table tbody tr.expanded {
-            background: #1e2633;
+        .feature-cell {
+            padding: 0.75rem 0.5rem;
+            vertical-align: top;
         }
         
-        .description-drawer {
-            display: none;
-            padding: 1rem 1.5rem;
+        .feature-description {
+            color: #8892a0;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin-top: 0.25rem;
+            padding-right: 1rem;
             background: #141922;
-            border-top: 1px solid #2d3748;
-            color: #a0aec0;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
         }
         
-        .description-drawer.show {
-            display: table-row;
-        }
-        
-        .expand-icon {
-            transition: transform 0.2s;
-            color: #6b7280;
-            font-size: 0.8rem;
-            margin-right: 0.5rem;
-            cursor: pointer;
-        }
-        
-        .expanded .expand-icon {
-            transform: rotate(90deg);
+        .description-link {
             color: #5ad1f2;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .description-link:hover {
+            opacity: 1;
         }
         
         /* Highlight first 15 rows for Gauntlet Sprint */
@@ -685,9 +683,10 @@
         }
 
         .feature-table td {
-            padding: 1.25rem 1rem;
-            font-size: 0.95rem;
+            padding: 0.75rem 0.5rem;
+            font-size: 0.85rem;
             color: #e0e6ed;
+            vertical-align: middle;
         }
 
         .drag-handle {
@@ -759,6 +758,8 @@
 
         .facing-cell {
             text-align: center;
+            vertical-align: top;
+            padding-top: 0.75rem !important;
         }
 
         .prfaq-status {
@@ -958,8 +959,7 @@
                 <thead>
                     <tr>
                         <th style="width: 3%;">#</th>
-                        <th style="width: 35%;">Feature</th>
-                        <th style="width: 4%;">Link</th>
+                        <th style="width: 38%;">Feature</th>
                         <th style="width: 6%;">Internal</th>
                         <th style="width: 6%;">External</th>
                         <th style="width: 6%;">PRFAQ</th>
@@ -1315,46 +1315,48 @@
 
                 const rowNumber = index + 1;
                 row.innerHTML = `
-                    <td style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'};">${rowNumber}</td>
-                    <td class="feature-name" onclick="toggleDescription(${feature.id}, event)">
-                        <i class="fas fa-chevron-right expand-icon"></i>
-                        <span class="drag-handle" onclick="event.stopPropagation()"><i class="fas fa-grip-vertical"></i></span>
-                        <span class="feature-name-text">${feature.name}</span>
+                    <td style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'}; vertical-align: middle;">${rowNumber}</td>
+                    <td class="feature-cell">
+                        <div style="display: flex; align-items: center;">
+                            <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                            <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
+                        </div>
+                        <div class="feature-description">
+                            ${feature.description}
+                            ${feature.url ? `<a href="${feature.url}" target="_blank" class="description-link" title="Open link"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
                     </td>
-                    <td style="text-align: center;">
-                        ${feature.url ? `<a href="${feature.url}" target="_blank" title="Open link" style="color: #5ad1f2; font-size: 1.1rem;"><i class="fas fa-external-link-alt"></i></a>` : ''}
-                    </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'internal')"
                            title="Internal - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${feature.external ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'external')"
                            title="External - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${prfaqChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'prfaq')"
                            title="PRFAQ - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${prdChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'prd')"
                            title="PRD - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${figmaChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'figma')"
                            title="Figma - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <i class="fas fa-${architectureChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'architecture')"
                            title="ARCH - Click to toggle"></i>
                     </td>
-                    <td style="text-align: left; padding-left: 1rem; font-size: 0.8rem; color: #a0aec0;">
+                    <td style="text-align: left; padding-left: 0.5rem; font-size: 0.75rem; color: #a0aec0; vertical-align: middle;">
                         ${feature.attendee ? (() => {
                             const parts = feature.attendee.split(' ');
                             const firstName = parts[0];
@@ -1363,7 +1365,7 @@
                             return `
                                 <div>
                                     <div style="color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Attendee</div>
-                                    <div style="color: #5ad1f2; font-size: 0.8rem;" title="Gauntlet Attendee">${displayName}</div>
+                                    <div style="color: #5ad1f2; font-size: 0.75rem;" title="Gauntlet Attendee">${displayName}</div>
                                 </div>`;
                         })() : ''}
                         ${(feature.attendee && feature.productManager) ? '<div style="border-top: 1px solid #374151; margin: 6px 0;"></div>' : ''}
@@ -1374,7 +1376,7 @@
                                 const firstName = parts[0];
                                 const lastInitial = parts[1] ? parts[1][0] : '';
                                 const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName;
-                                return `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${displayName}</div>`;
+                                return `<div style="color: #10b981; font-size: 0.75rem;" title="Stakeholder">${displayName}</div>`;
                             }).join('');
                             
                             if (stakeholdersList) {
@@ -1388,7 +1390,7 @@
                             return '';
                         })() : ''}
                     </td>
-                    <td class="facing-cell">
+                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
                         <div class="action-buttons">
                             <button class="action-btn edit-btn" onclick="editFeature(${feature.id})" data-tooltip="Edit Feature">
                                 <i class="fas fa-pen"></i>
@@ -1401,21 +1403,6 @@
                 `;
 
                 tbody.appendChild(row);
-                
-                // Add description drawer row
-                const descRow = document.createElement('tr');
-                descRow.className = 'description-drawer';
-                descRow.id = `desc-${feature.id}`;
-                descRow.style.display = 'none';
-                descRow.innerHTML = `
-                    <td colspan="11" style="padding: 0;">
-                        <div style="padding: 1rem 1.5rem; background: #141922; border-top: 1px solid #2d3748;">
-                            <strong style="color: #5ad1f2; font-size: 0.8rem;">DESCRIPTION:</strong>
-                            <div style="margin-top: 0.5rem; color: #a0aec0;">${feature.description}</div>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(descRow);
             });
 
             addDragEventListeners();
@@ -1627,25 +1614,6 @@
         });
 
 
-        // Toggle description drawer
-        window.toggleDescription = function(featureId, event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            const row = document.querySelector(`tr[data-feature-id="${featureId}"]`);
-            const drawer = document.getElementById(`desc-${featureId}`);
-            
-            if (row && drawer) {
-                row.classList.toggle('expanded');
-                if (drawer.style.display === 'none' || drawer.style.display === '') {
-                    drawer.style.display = 'table-row';
-                } else {
-                    drawer.style.display = 'none';
-                }
-            }
-        }
-        
         // Toggle icon for all checkbox fields
         window.toggleIcon = function(featureId, field) {
             const feature = features.find(f => f.id === featureId);
