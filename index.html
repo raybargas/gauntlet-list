@@ -702,14 +702,31 @@
         }
 
         .feature-table tbody tr.dragging {
-            opacity: 0.5;
-            background: #374151;
+            opacity: 0.4;
+            background: #374151 !important;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Hide the browser's default drag image */
+        .feature-table tbody tr.dragging * {
+            pointer-events: none;
         }
 
         .feature-table tbody tr.drag-over {
-            background: rgba(90, 209, 242, 0.1);
-            border-top: 2px solid #5ad1f2;
-            border-bottom: 2px solid #5ad1f2;
+            position: relative;
+        }
+        
+        .feature-table tbody tr.drag-over::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #5ad1f2;
+            box-shadow: 0 0 10px rgba(90, 209, 242, 0.5);
+            z-index: 10;
         }
 
         .feature-table td {
@@ -721,12 +738,16 @@
 
         .drag-handle {
             cursor: grab;
+            user-select: none;
         }
         
         .drag-handle:active {
             cursor: grabbing;
             color: #6b7280;
-            padding-right: 0.5rem;
+        }
+        
+        .feature-table tbody tr.dragging .drag-handle {
+            cursor: grabbing;
         }
 
         .drag-handle:hover {
@@ -1527,16 +1548,47 @@
 
         function handleDragStart(e) {
             draggedElement = this;
+            // Also get the description row
+            const descRow = this.nextSibling;
+            
+            // Add dragging class to both rows
             this.classList.add('dragging');
+            if (descRow && descRow.classList.contains('feature-desc-row')) {
+                descRow.classList.add('dragging');
+            }
+            
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', this.innerHTML);
+            
+            // Set a custom drag image if supported
+            if (e.dataTransfer.setDragImage) {
+                // Create a clone of the feature block for the drag image
+                const dragImage = document.createElement('div');
+                dragImage.style.position = 'absolute';
+                dragImage.style.top = '-1000px';
+                dragImage.style.background = '#252d3d';
+                dragImage.style.border = '2px solid #5ad1f2';
+                dragImage.style.borderRadius = '8px';
+                dragImage.style.padding = '10px';
+                dragImage.style.color = '#e0e6ed';
+                dragImage.innerHTML = this.querySelector('.feature-name-text').textContent;
+                document.body.appendChild(dragImage);
+                e.dataTransfer.setDragImage(dragImage, 0, 0);
+                setTimeout(() => document.body.removeChild(dragImage), 0);
+            }
         }
 
         function handleDragEnd(e) {
             this.classList.remove('dragging');
             
+            // Also remove dragging class from description row
+            const descRow = this.nextSibling;
+            if (descRow && descRow.classList.contains('feature-desc-row')) {
+                descRow.classList.remove('dragging');
+            }
+            
             const rows = document.querySelectorAll('#featureTableBody tr');
-            rows.forEach(row => row.classList.remove('drag-over'));
+            rows.forEach(row => row.classList.remove('drag-over', 'dragging'));
             
             lastDragOverElement = null;
             draggedElement = null;
