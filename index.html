@@ -660,7 +660,11 @@
         }
 
         .drag-handle {
-            cursor: move;
+            cursor: grab;
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing;
             color: #6b7280;
             padding-right: 0.5rem;
         }
@@ -926,14 +930,14 @@
                         <th style="width: 18%;">Feature</th>
                         <th style="width: 28%;">Description</th>
                         <th style="width: 3%;">Link</th>
-                        <th style="width: 5%;">Internal</th>
-                        <th style="width: 5%;">External</th>
-                        <th style="width: 5%;">PRFAQ</th>
-                        <th style="width: 5%;">PRD</th>
-                        <th style="width: 5%;">Figma</th>
-                        <th style="width: 5%;">ARCH</th>
-                        <th style="width: 8%;" title="Blue = Attendee, Green = Stakeholder">Assigned</th>
-                        <th style="width: 8%;">Actions</th>
+                        <th style="width: 6%;">Internal</th>
+                        <th style="width: 6%;">External</th>
+                        <th style="width: 6%;">PRFAQ</th>
+                        <th style="width: 6%;">PRD</th>
+                        <th style="width: 6%;">Figma</th>
+                        <th style="width: 6%;">ARCH</th>
+                        <th style="width: 15%;" title="Blue = Attendee, Green = Stakeholder">Assigned</th>
+                        <th style="width: 10%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="featureTableBody">
