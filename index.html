@@ -1450,13 +1450,16 @@
                 if (isLast15) descRow.classList.add('top-15-last');
                 descRow.dataset.featureId = feature.id + '-desc';
                 descRow.innerHTML = `
-                    <td colspan="10" style="padding: 0 1rem 0.75rem 3rem; border-top: none;">
+                    <td style="border-top: none; background: inherit;"></td>
+                    <td colspan="7" style="padding: 0 1rem 0.75rem 1rem; border-top: none;">
                         <div style="display: flex; align-items: flex-start; gap: 0.5rem; color: #8892a0; font-size: 0.75rem; line-height: 1.4;">
                             <span style="color: #5ad1f2; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Description:</span>
                             <span style="flex: 1;">${feature.description}</span>
                             ${feature.url ? `<a href="${feature.url}" target="_blank" style="color: #5ad1f2; font-size: 0.85rem; opacity: 0.8; transition: opacity 0.2s;" title="Open link" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'"><i class="fas fa-external-link-alt"></i></a>` : ''}
                         </div>
                     </td>
+                    <td style="border-top: none; background: inherit;"></td>
+                    <td style="border-top: none; background: inherit;"></td>
                 `;
                 tbody.appendChild(descRow);
             });
