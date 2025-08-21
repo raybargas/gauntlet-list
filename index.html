@@ -1666,6 +1666,14 @@
         window.addNewFeature = function() {
             openModal(false);
         }
+        
+        // Clear all stakeholder selections
+        window.clearStakeholders = function() {
+            const pmSelect = document.getElementById('featureProductManager');
+            Array.from(pmSelect.options).forEach(option => {
+                option.selected = false;
+            });
+        }
 
         // Edit existing feature
         window.editFeature = function(featureId) {
