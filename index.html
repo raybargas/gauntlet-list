@@ -681,30 +681,6 @@
             box-shadow: 0 4px 12px rgba(90, 209, 242, 0.15);
         }
 
-        /* Hover effect for feature blocks */
-        .feature-table tbody tr.feature-hover {
-            background: #252d3d !important;
-        }
-        
-        .feature-table tbody tr.feature-hover td {
-            background: #252d3d !important;
-        }
-        
-        .feature-table tbody td.feature-hover-cell {
-            background: #252d3d !important;
-        }
-        
-        .feature-table tbody tr.top-15.feature-hover {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
-        }
-        
-        .feature-table tbody tr.top-15.feature-hover td {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
-        }
-        
-        .feature-table tbody tr.top-15 td.feature-hover-cell {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
-        }
 
         .feature-table tbody tr.dragging {
             opacity: 0.4;
@@ -1501,52 +1477,7 @@
             });
 
             addDragEventListeners();
-            addHoverEventListeners();
             updateStats();
-        }
-        
-        // Add hover event listeners for feature blocks
-        function addHoverEventListeners() {
-            const rows = document.querySelectorAll('#featureTableBody tr');
-            
-            rows.forEach((row) => {
-                row.addEventListener('mouseenter', function(e) {
-                    // Check if we're hovering over a rowspan cell
-                    const targetCell = e.target.closest('td');
-                    let mainRow = this;
-                    
-                    // If hovering over a rowspan cell from the description row, use the main row
-                    if (targetCell && targetCell.hasAttribute('rowspan')) {
-                        // Find the main row this cell belongs to
-                        if (this.classList.contains('feature-desc-row') && this.previousSibling) {
-                            mainRow = this.previousSibling;
-                        }
-                    } else if (this.classList.contains('feature-desc-row')) {
-                        // Regular description row hover
-                        mainRow = this.previousSibling;
-                    }
-                    
-                    // Highlight both the main row and description row
-                    if (mainRow && mainRow.classList.contains('feature-main-row')) {
-                        mainRow.classList.add('feature-hover');
-                        if (mainRow.nextSibling && mainRow.nextSibling.classList.contains('feature-desc-row')) {
-                            mainRow.nextSibling.classList.add('feature-hover');
-                        }
-                        
-                        // Also add hover class to rowspan cells
-                        const rowspanCells = mainRow.querySelectorAll('td[rowspan]');
-                        rowspanCells.forEach(cell => cell.classList.add('feature-hover-cell'));
-                    }
-                });
-                
-                row.addEventListener('mouseleave', function(e) {
-                    // Remove hover from both rows and cells
-                    const rows = document.querySelectorAll('#featureTableBody tr.feature-hover');
-                    rows.forEach(r => r.classList.remove('feature-hover'));
-                    const cells = document.querySelectorAll('#featureTableBody td.feature-hover-cell');
-                    cells.forEach(c => c.classList.remove('feature-hover-cell'));
-                });
-            });
         }
 
         // Drag and drop functionality
