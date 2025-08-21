@@ -693,33 +693,6 @@
             background: #252d3d !important;
         }
 
-        .feature-table tbody tr.dragging {
-            opacity: 0.4;
-            background: #374151 !important;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Hide the browser's default drag image */
-        .feature-table tbody tr.dragging * {
-            pointer-events: none;
-        }
-
-        .feature-table tbody tr.drag-over {
-            position: relative;
-        }
-        
-        .feature-table tbody tr.drag-over::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #5ad1f2;
-            box-shadow: 0 0 10px rgba(90, 209, 242, 0.5);
-            z-index: 10;
-        }
 
         .feature-table td {
             padding: 0.75rem 0.5rem;
@@ -728,40 +701,18 @@
             vertical-align: middle;
         }
 
-        .drag-handle {
-            cursor: grab;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+        .arrow-btn {
+            transition: all 0.2s;
         }
         
-        .drag-handle:active {
-            cursor: grabbing;
-            color: #6b7280;
+        .arrow-btn:hover:not(:disabled) {
+            color: #5ad1f2 !important;
+            transform: scale(1.2);
         }
         
-        .feature-table tbody tr.dragging .drag-handle {
-            cursor: grabbing;
-        }
-        
-        /* Prevent text selection during drag */
-        .feature-table tbody tr {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        .feature-table tbody tr * {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .drag-handle:hover {
-            color: #5ad1f2;
+        .arrow-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .item-number {
@@ -1383,7 +1334,6 @@
                 row.classList.add('feature-main-row');
                 if (isTop15) row.classList.add('top-15');
                 row.dataset.featureId = feature.id;
-                row.draggable = false; // Initially not draggable
                 
                 const prfaqChecked = feature.prfaqStatus === 'complete' ? 'checked' : '';
                 const prdChecked = feature.prd ? 'checked' : '';
@@ -1394,7 +1344,14 @@
                     <td style="text-align: center; font-weight: 600; color: ${isTop15 ? '#5ad1f2' : '#6b7280'}; padding: 0.25rem 0.5rem;">${rowNumber}</td>
                     <td class="feature-cell">
                         <div style="display: flex; align-items: center;">
-                            <span class="drag-handle" style="cursor: grab; padding: 0 0.5rem;"><i class="fas fa-grip-vertical"></i></span>
+                            <div class="reorder-buttons" style="display: flex; flex-direction: column; margin-right: 0.5rem;">
+                                <button onclick="moveFeatureUp(${feature.id})" class="arrow-btn" ${index === 0 ? 'disabled' : ''} style="padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6b7280; font-size: 0.7rem; line-height: 1;">
+                                    <i class="fas fa-chevron-up"></i>
+                                </button>
+                                <button onclick="moveFeatureDown(${feature.id})" class="arrow-btn" ${index === filteredFeatures.length - 1 ? 'disabled' : ''} style="padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6b7280; font-size: 0.7rem; line-height: 1;">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
                             <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
                         </div>
                     </td>
@@ -1495,9 +1452,36 @@
                 tbody.appendChild(descRow);
             });
 
-            addDragEventListeners();
             addHoverEventListeners();
             updateStats();
+        }
+        
+        // Move feature up
+        window.moveFeatureUp = function(featureId) {
+            const index = features.findIndex(f => f.id === featureId);
+            if (index > 0) {
+                // Swap with previous feature
+                [features[index - 1], features[index]] = [features[index], features[index - 1]];
+                // Update order properties
+                features[index - 1].order = index;
+                features[index].order = index + 1;
+                renderTable();
+                saveFeaturesData();
+            }
+        }
+        
+        // Move feature down
+        window.moveFeatureDown = function(featureId) {
+            const index = features.findIndex(f => f.id === featureId);
+            if (index < features.length - 1) {
+                // Swap with next feature
+                [features[index], features[index + 1]] = [features[index + 1], features[index]];
+                // Update order properties
+                features[index].order = index + 1;
+                features[index + 1].order = index + 2;
+                renderTable();
+                saveFeaturesData();
+            }
         }
         
         // Add hover event listeners for feature blocks
@@ -1535,144 +1519,6 @@
             });
         }
 
-        // Drag and drop functionality
-        let draggedElement = null;
-        let draggedDescElement = null;
-        let placeholder = null;
-
-        function addDragEventListeners() {
-            const tbody = document.getElementById('featureTableBody');
-            
-            // Handle drag initiation from handle
-            tbody.addEventListener('mousedown', function(e) {
-                const handle = e.target.closest('.drag-handle');
-                if (!handle) return;
-                
-                const row = handle.closest('tr.feature-main-row');
-                if (!row) return;
-                
-                // Enable dragging on this row
-                row.draggable = true;
-                
-                // Set up drag start listener for this specific row
-                row.addEventListener('dragstart', function dragStart(e) {
-                    draggedElement = row;
-                    draggedDescElement = row.nextSibling;
-                    
-                    // Add dragging class
-                    row.classList.add('dragging');
-                    if (draggedDescElement) {
-                        draggedDescElement.classList.add('dragging');
-                    }
-                    
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/html', 'dragging');
-                    
-                    // Remove this listener after use
-                    row.removeEventListener('dragstart', dragStart);
-                });
-                
-                // Clean up on drag end
-                row.addEventListener('dragend', function dragEnd(e) {
-                    row.draggable = false;
-                    row.classList.remove('dragging');
-                    if (draggedDescElement) {
-                        draggedDescElement.classList.remove('dragging');
-                    }
-                    
-                    // Remove all drag-over classes
-                    document.querySelectorAll('.drag-over').forEach(el => {
-                        el.classList.remove('drag-over');
-                    });
-                    
-                    draggedElement = null;
-                    draggedDescElement = null;
-                    
-                    // Remove this listener after use
-                    row.removeEventListener('dragend', dragEnd);
-                });
-            });
-            
-            // Handle dragover and drop on tbody
-            tbody.addEventListener('dragover', handleDragOver);
-            tbody.addEventListener('drop', handleDrop);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            
-            // Find the closest feature row
-            const targetRow = e.target.closest('tr.feature-main-row');
-            if (!targetRow || targetRow === draggedElement) return false;
-            
-            // Remove previous drag-over indicators
-            document.querySelectorAll('.drag-over').forEach(el => {
-                el.classList.remove('drag-over');
-            });
-            
-            // Add drag-over indicator
-            targetRow.classList.add('drag-over');
-            
-            return false;
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (!draggedElement || !draggedDescElement) return false;
-            
-            // Find target row
-            const targetRow = e.target.closest('tr.feature-main-row');
-            if (!targetRow || targetRow === draggedElement) return false;
-            
-            const targetDescRow = targetRow.nextSibling;
-            const tbody = document.getElementById('featureTableBody');
-            
-            // Determine drop position based on mouse position
-            const rect = targetRow.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-            
-            if (e.clientY < midpoint) {
-                // Insert before target
-                tbody.insertBefore(draggedElement, targetRow);
-                tbody.insertBefore(draggedDescElement, targetRow);
-            } else {
-                // Insert after target's description row
-                if (targetDescRow && targetDescRow.nextSibling) {
-                    tbody.insertBefore(draggedElement, targetDescRow.nextSibling);
-                    tbody.insertBefore(draggedDescElement, targetDescRow.nextSibling);
-                } else {
-                    // Append at the end
-                    tbody.appendChild(draggedElement);
-                    tbody.appendChild(draggedDescElement);
-                }
-            }
-            
-            // Update the features array and re-render
-            updateFeatureOrder();
-            
-            return false;
-        }
-        
-        function updateFeatureOrder() {
-            const rows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
-            const newOrder = [];
-            
-            rows.forEach((row, index) => {
-                const featureId = parseInt(row.dataset.featureId);
-                const feature = features.find(f => f.id === featureId);
-                if (feature) {
-                    feature.order = index + 1;
-                    newOrder.push(feature);
-                }
-            });
-            
-            features = newOrder;
-            renderTable();
-            saveFeaturesData();
-        }
 
 
         // Update statistics - Top 15 only
