@@ -690,12 +690,20 @@
             background: #252d3d !important;
         }
         
+        .feature-table tbody td.feature-hover-cell {
+            background: #252d3d !important;
+        }
+        
         .feature-table tbody tr.top-15.feature-hover {
             background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
         }
         
         .feature-table tbody tr.top-15.feature-hover td {
-            background: transparent !important;
+            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
+        }
+        
+        .feature-table tbody tr.top-15 td.feature-hover-cell {
+            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
         }
 
         .feature-table tbody tr.dragging {
@@ -1524,13 +1532,19 @@
                         if (mainRow.nextSibling && mainRow.nextSibling.classList.contains('feature-desc-row')) {
                             mainRow.nextSibling.classList.add('feature-hover');
                         }
+                        
+                        // Also add hover class to rowspan cells
+                        const rowspanCells = mainRow.querySelectorAll('td[rowspan]');
+                        rowspanCells.forEach(cell => cell.classList.add('feature-hover-cell'));
                     }
                 });
                 
                 row.addEventListener('mouseleave', function(e) {
-                    // Remove hover from both rows
+                    // Remove hover from both rows and cells
                     const rows = document.querySelectorAll('#featureTableBody tr.feature-hover');
                     rows.forEach(r => r.classList.remove('feature-hover'));
+                    const cells = document.querySelectorAll('#featureTableBody td.feature-hover-cell');
+                    cells.forEach(c => c.classList.remove('feature-hover-cell'));
                 });
             });
         }
