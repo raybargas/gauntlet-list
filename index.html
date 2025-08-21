@@ -634,7 +634,6 @@
 
         .feature-table tbody tr {
             transition: all 0.2s;
-            cursor: move;
             position: relative;
         }
         
@@ -1384,6 +1383,7 @@
                 row.classList.add('feature-main-row');
                 if (isTop15) row.classList.add('top-15');
                 row.dataset.featureId = feature.id;
+                row.draggable = false; // Initially not draggable
                 
                 const prfaqChecked = feature.prfaqStatus === 'complete' ? 'checked' : '';
                 const prdChecked = feature.prd ? 'checked' : '';
@@ -1538,11 +1538,12 @@
         // Drag and drop functionality
         let draggedElement = null;
         let draggedDescElement = null;
+        let placeholder = null;
 
         function addDragEventListeners() {
             const tbody = document.getElementById('featureTableBody');
             
-            // Make handle draggable
+            // Handle drag initiation from handle
             tbody.addEventListener('mousedown', function(e) {
                 const handle = e.target.closest('.drag-handle');
                 if (!handle) return;
@@ -1550,56 +1551,51 @@
                 const row = handle.closest('tr.feature-main-row');
                 if (!row) return;
                 
-                // Set draggable on the row
-                row.setAttribute('draggable', 'true');
+                // Enable dragging on this row
+                row.draggable = true;
                 
-                // Store the element we're dragging
-                draggedElement = row;
-                draggedDescElement = row.nextSibling;
+                // Set up drag start listener for this specific row
+                row.addEventListener('dragstart', function dragStart(e) {
+                    draggedElement = row;
+                    draggedDescElement = row.nextSibling;
+                    
+                    // Add dragging class
+                    row.classList.add('dragging');
+                    if (draggedDescElement) {
+                        draggedDescElement.classList.add('dragging');
+                    }
+                    
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', 'dragging');
+                    
+                    // Remove this listener after use
+                    row.removeEventListener('dragstart', dragStart);
+                });
+                
+                // Clean up on drag end
+                row.addEventListener('dragend', function dragEnd(e) {
+                    row.draggable = false;
+                    row.classList.remove('dragging');
+                    if (draggedDescElement) {
+                        draggedDescElement.classList.remove('dragging');
+                    }
+                    
+                    // Remove all drag-over classes
+                    document.querySelectorAll('.drag-over').forEach(el => {
+                        el.classList.remove('drag-over');
+                    });
+                    
+                    draggedElement = null;
+                    draggedDescElement = null;
+                    
+                    // Remove this listener after use
+                    row.removeEventListener('dragend', dragEnd);
+                });
             });
             
-            // Add event listeners to tbody for delegation
-            tbody.addEventListener('dragstart', handleDragStart);
-            tbody.addEventListener('dragend', handleDragEnd);
+            // Handle dragover and drop on tbody
             tbody.addEventListener('dragover', handleDragOver);
             tbody.addEventListener('drop', handleDrop);
-            tbody.addEventListener('dragleave', handleDragLeave);
-        }
-
-        function handleDragStart(e) {
-            const row = e.target.closest('tr.feature-main-row');
-            if (!row || row !== draggedElement) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Add dragging class
-            row.classList.add('dragging');
-            if (draggedDescElement) {
-                draggedDescElement.classList.add('dragging');
-            }
-            
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', row.dataset.featureId);
-        }
-
-        function handleDragEnd(e) {
-            // Clean up
-            if (draggedElement) {
-                draggedElement.classList.remove('dragging');
-                draggedElement.removeAttribute('draggable');
-            }
-            if (draggedDescElement) {
-                draggedDescElement.classList.remove('dragging');
-            }
-            
-            // Remove all drag-over classes
-            document.querySelectorAll('.drag-over').forEach(el => {
-                el.classList.remove('drag-over');
-            });
-            
-            draggedElement = null;
-            draggedDescElement = null;
         }
 
         function handleDragOver(e) {
@@ -1678,13 +1674,6 @@
             saveFeaturesData();
         }
 
-        function handleDragLeave(e) {
-            // Remove drag-over class when leaving
-            const row = e.target.closest('tr');
-            if (row) {
-                row.classList.remove('drag-over');
-            }
-        }
 
         // Update statistics - Top 15 only
         function updateStats() {
