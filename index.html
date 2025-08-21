@@ -1355,6 +1355,8 @@
                                     return `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${displayName}</div>`;
                                 })()
                             ) : ''}
+                        ${feature.productManager && !feature.attendee ? `<div style="color: #6b7280; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Stakeholder</div>` : ''}
+                        ${feature.productManager && feature.attendee ? `<div style="color: #6b7280; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Stakeholder${Array.isArray(feature.productManager) && feature.productManager.length > 1 ? 's' : ''}</div>` : ''}
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
