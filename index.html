@@ -1449,6 +1449,7 @@
                 const descRow = document.createElement('tr');
                 descRow.dataset.featureId = feature.id + '-desc';
                 descRow.innerHTML = `
+                    <td style="border-top: none;"></td>
                     <td colspan="7" style="padding: 0.5rem 1rem 1rem 1rem; border-top: none;">
                         <div style="display: flex; align-items: flex-start; gap: 0.5rem; color: #8892a0; font-size: 0.75rem; line-height: 1.5;">
                             <span style="color: #5ad1f2; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; margin-top: 2px;">Description:</span>
@@ -1456,6 +1457,8 @@
                             ${feature.url ? `<a href="${feature.url}" target="_blank" style="color: #5ad1f2; font-size: 0.85rem; opacity: 0.8; transition: opacity 0.2s;" title="Open link" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'"><i class="fas fa-external-link-alt"></i></a>` : ''}
                         </div>
                     </td>
+                    <td style="border-top: none;"></td>
+                    <td style="border-top: none;"></td>
                 `;
                 tbody.appendChild(descRow);
             });
