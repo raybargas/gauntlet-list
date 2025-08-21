@@ -1599,6 +1599,16 @@
                 return false;
             }
             
+            // If it's a description row, use its main row instead
+            if (targetRow.classList.contains('feature-desc-row')) {
+                targetRow = targetRow.previousSibling;
+            }
+            
+            // Only process main feature rows
+            if (!targetRow || !targetRow.classList.contains('feature-main-row')) {
+                return false;
+            }
+            
             // Only update if we're over a different element
             if (targetRow !== lastDragOverElement) {
                 // Remove previous indicator
@@ -1635,13 +1645,14 @@
             }
             
             // Make sure we're only working with main feature rows
-            if (targetElement && targetElement.nextSibling && targetElement.nextSibling.dataset && 
-                targetElement.nextSibling.dataset.featureId && targetElement.nextSibling.dataset.featureId.includes('-desc')) {
-                // Target is already a main row, good
-            } else if (targetElement && targetElement.dataset && targetElement.dataset.featureId && 
-                       targetElement.dataset.featureId.includes('-desc')) {
+            if (targetElement && targetElement.classList.contains('feature-desc-row')) {
                 // Target is a description row, get the previous main row
                 targetElement = targetElement.previousSibling;
+            } else if (!targetElement || !targetElement.classList.contains('feature-main-row')) {
+                // Not a valid feature row
+                lastDragOverElement = null;
+                draggedElement = null;
+                return false;
             }
             
             // Don't do anything if dropping on itself or no valid target
