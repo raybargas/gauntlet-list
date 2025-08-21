@@ -322,7 +322,7 @@
             border: 1px solid #2d3748;
             border-radius: 12px;
             width: 90%;
-            max-width: 500px;
+            max-width: 900px;
             max-height: 95vh;
             overflow-y: auto;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
@@ -360,15 +360,44 @@
 
         .modal-header {
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #2d3748;
         }
 
         .modal-header h2 {
             color: #5ad1f2;
             font-size: 1.5rem;
         }
+        
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-section {
+            background: #0f1419;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .modal-section-title {
+            color: #5ad1f2;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .full-width {
+            grid-column: span 2;
+        }
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
@@ -599,7 +628,6 @@
         }
 
         .feature-table tbody tr {
-            border-bottom: 1px solid #2d3748;
             transition: all 0.2s;
             cursor: move;
             position: relative;
@@ -610,8 +638,9 @@
             vertical-align: top;
         }
         
+        /* Add bottom border only to description rows (every second row) */
         .feature-table tbody tr:nth-child(even) {
-            border-bottom: 2px solid #2d3748;
+            border-bottom: 1px solid #2d3748;
         }
         
         .feature-table tbody tr:nth-child(odd) {
@@ -631,25 +660,24 @@
             opacity: 1;
         }
         
-        /* Highlight first 15 rows for Gauntlet Sprint */
-        .feature-table tbody tr:nth-child(-n+15) {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.06) 0%, rgba(90, 209, 242, 0.02) 50%, transparent 100%);
+        /* Highlight first 15 feature blocks (30 rows total - 2 rows per feature) for Gauntlet Sprint */
+        .feature-table tbody tr:nth-child(-n+30) {
+            background: linear-gradient(90deg, rgba(90, 209, 242, 0.05) 0%, rgba(90, 209, 242, 0.02) 50%, transparent 100%);
+        }
+        
+        /* Add left border only to main feature rows in top 15 */
+        .feature-table tbody tr:nth-child(-n+29):nth-child(odd) {
             border-left: 4px solid #5ad1f2;
         }
         
-        /* Add subtle alternating shading for better distinction */
-        .feature-table tbody tr:nth-child(-n+15):nth-child(even) {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.08) 0%, rgba(90, 209, 242, 0.03) 50%, transparent 100%);
-        }
-        
-        /* Separator line after 15th row */
-        .feature-table tbody tr:nth-child(15) {
+        /* Separator line after 15th feature block (30th row) */
+        .feature-table tbody tr:nth-child(30) {
             border-bottom: 3px solid #5ad1f2;
             box-shadow: 0 4px 12px rgba(90, 209, 242, 0.15);
         }
         
-        /* Add badge to first cell of top 15 rows */
-        .feature-table tbody tr:nth-child(-n+15) td:first-child::after {
+        /* Add badge to first cell of top 15 main feature rows */
+        .feature-table tbody tr:nth-child(-n+29):nth-child(odd) td:first-child::after {
             content: '⚡';
             position: absolute;
             right: 2px;
@@ -660,12 +688,13 @@
             opacity: 0.7;
         }
 
-        .feature-table tbody tr:hover {
-            background: #252d3d;
+        /* Hover effect for feature blocks */
+        .feature-table tbody tr.feature-hover {
+            background: #252d3d !important;
         }
         
-        .feature-table tbody tr:nth-child(-n+15):hover {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%);
+        .feature-table tbody tr:nth-child(-n+30).feature-hover {
+            background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
         }
 
         .feature-table tbody tr.dragging {
@@ -1030,82 +1059,101 @@
                 <h2 id="modalTitle">Add New Feature</h2>
             </div>
             <form id="featureForm">
-                <div class="form-group">
-                    <label for="featureName">Feature Name *</label>
-                    <input type="text" id="featureName" required>
+                <!-- Feature Details - Full Width -->
+                <div class="modal-section full-width">
+                    <div class="modal-section-title">Feature Details</div>
+                    <div class="form-group">
+                        <label for="featureName">Feature Name *</label>
+                        <input type="text" id="featureName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="featureDescription">Description *</label>
+                        <textarea id="featureDescription" required style="min-height: 60px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="featureUrl">Link/URL (optional)</label>
+                        <input type="url" id="featureUrl" placeholder="https://example.com/feature-docs">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="featureDescription">Description *</label>
-                    <textarea id="featureDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="featureUrl">Link/URL (optional)</label>
-                    <input type="url" id="featureUrl" placeholder="https://example.com/feature-docs">
-                </div>
-                <div class="form-group">
-                    <label for="featureAttendee">Gauntlet Attendee</label>
-                    <select id="featureAttendee">
-                        <option value="">-- Select Attendee --</option>
-                        <option value="Bill Shuck">Bill Shuck</option>
-                        <option value="Josh Owen">Josh Owen</option>
-                        <option value="Matt Hills">Matt Hills</option>
-                        <option value="Ray Bargas">Ray Bargas</option>
-                        <option value="Zack Tata">Zack Tata</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="featureProductManager">Stakeholders (Select multiple with Ctrl/Cmd)</label>
-                    <select id="featureProductManager" multiple size="8">
-                        <option value="Amanda Hill">Amanda Hill</option>
-                        <option value="Daryl Nathanson">Daryl Nathanson</option>
-                        <option value="Fran Timothy">Fran Timothy</option>
-                        <option value="Josh Owen">Josh Owen</option>
-                        <option value="Kevin Hall">Kevin Hall</option>
-                        <option value="Leslie Ingram">Leslie Ingram</option>
-                        <option value="Loren Landry">Loren Landry</option>
-                        <option value="Marsha Blobaum">Marsha Blobaum</option>
-                        <option value="Ray Bargas">Ray Bargas</option>
-                        <option value="Ryan Downs">Ryan Downs</option>
-                        <option value="Ryan Koontz">Ryan Koontz</option>
-                        <option value="Serge Doudy">Serge Doudy</option>
-                        <option value="Whitney Yates">Whitney Yates</option>
-                        <option value="Will Steiner">Will Steiner</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Facing</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featureInternal">
-                            <label for="featureInternal">Internal</label>
+                
+                <div class="modal-grid">
+                    <!-- Assignments - Left Column -->
+                    <div class="modal-section">
+                        <div class="modal-section-title">Assignments</div>
+                        <div class="form-group">
+                            <label for="featureAttendee">Gauntlet Attendee</label>
+                            <select id="featureAttendee">
+                                <option value="">-- Select Attendee --</option>
+                                <option value="Bill Shuck">Bill Shuck</option>
+                                <option value="Josh Owen">Josh Owen</option>
+                                <option value="Matt Hills">Matt Hills</option>
+                                <option value="Ray Bargas">Ray Bargas</option>
+                                <option value="Zack Tata">Zack Tata</option>
+                            </select>
                         </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featureExternal">
-                            <label for="featureExternal">External</label>
+                        <div class="form-group">
+                            <label for="featureProductManager">Stakeholders 
+                                <span style="font-size: 0.75rem; color: #6b7280; font-weight: normal;">(Ctrl/Cmd for multiple)</span>
+                            </label>
+                            <select id="featureProductManager" multiple size="6">
+                                <option value="Amanda Hill">Amanda Hill</option>
+                                <option value="Daryl Nathanson">Daryl Nathanson</option>
+                                <option value="Fran Timothy">Fran Timothy</option>
+                                <option value="Josh Owen">Josh Owen</option>
+                                <option value="Kevin Hall">Kevin Hall</option>
+                                <option value="Leslie Ingram">Leslie Ingram</option>
+                                <option value="Loren Landry">Loren Landry</option>
+                                <option value="Marsha Blobaum">Marsha Blobaum</option>
+                                <option value="Ray Bargas">Ray Bargas</option>
+                                <option value="Ryan Downs">Ryan Downs</option>
+                                <option value="Ryan Koontz">Ryan Koontz</option>
+                                <option value="Serge Doudy">Serge Doudy</option>
+                                <option value="Whitney Yates">Whitney Yates</option>
+                                <option value="Will Steiner">Will Steiner</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuration - Right Column -->
+                    <div class="modal-section">
+                        <div class="modal-section-title">Configuration</div>
+                        <div class="form-group">
+                            <label>Target Audience</label>
+                            <div class="checkbox-group" style="margin-top: 0.5rem;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featureInternal">
+                                    <label for="featureInternal">Internal</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featureExternal">
+                                    <label for="featureExternal">External</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label>Documentation Status</label>
+                            <div class="checkbox-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featurePrfaq">
+                                    <label for="featurePrfaq">PRFAQ</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featurePrd">
+                                    <label for="featurePrd">PRD</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featureFigma">
+                                    <label for="featureFigma">Figma</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="featureArchitecture">
+                                    <label for="featureArchitecture">ARCH</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Documentation Status</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featurePrfaq">
-                            <label for="featurePrfaq">PRFAQ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featurePrd">
-                            <label for="featurePrd">PRD</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featureFigma">
-                            <label for="featureFigma">Figma</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="featureArchitecture">
-                            <label for="featureArchitecture">ARCH</label>
-                        </div>
-                    </div>
-                </div>
+                
                 <div class="modal-buttons">
                     <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">Cancel</button>
                     <button type="submit" class="modal-btn modal-btn-primary">Save Feature</button>
@@ -1413,7 +1461,47 @@
             });
 
             addDragEventListeners();
+            addHoverEventListeners();
             updateStats();
+        }
+        
+        // Add hover event listeners for feature blocks
+        function addHoverEventListeners() {
+            const rows = document.querySelectorAll('#featureTableBody tr');
+            
+            rows.forEach((row, index) => {
+                row.addEventListener('mouseenter', function() {
+                    // Determine if this is a main row or description row
+                    if (index % 2 === 0) {
+                        // Main row - highlight this and next row
+                        this.classList.add('feature-hover');
+                        if (this.nextSibling) {
+                            this.nextSibling.classList.add('feature-hover');
+                        }
+                    } else {
+                        // Description row - highlight this and previous row
+                        this.classList.add('feature-hover');
+                        if (this.previousSibling) {
+                            this.previousSibling.classList.add('feature-hover');
+                        }
+                    }
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    // Remove hover from both rows
+                    if (index % 2 === 0) {
+                        this.classList.remove('feature-hover');
+                        if (this.nextSibling) {
+                            this.nextSibling.classList.remove('feature-hover');
+                        }
+                    } else {
+                        this.classList.remove('feature-hover');
+                        if (this.previousSibling) {
+                            this.previousSibling.classList.remove('feature-hover');
+                        }
+                    }
+                });
+            });
         }
 
         // Drag and drop functionality
