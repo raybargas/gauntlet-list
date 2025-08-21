@@ -1544,37 +1544,12 @@
             const rows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
             
             rows.forEach((row) => {
-                // Initially not draggable
-                row.draggable = false;
+                // Make rows draggable by default
+                row.draggable = true;
                 
-                // Find the drag handle in this row
-                const handle = row.querySelector('.drag-handle');
-                if (handle) {
-                    // Make handle explicitly draggable
-                    handle.addEventListener('mousedown', function(e) {
-                        e.preventDefault(); // Prevent text selection
-                        e.stopPropagation();
-                        row.draggable = true;
-                        
-                        // Force start drag on next tick
-                        setTimeout(() => {
-                            row.draggable = true;
-                        }, 0);
-                    });
-                    
-                    // Reset draggable on mouseup
-                    handle.addEventListener('mouseup', function(e) {
-                        setTimeout(() => {
-                            row.draggable = false;
-                        }, 100);
-                    });
-                }
-                
+                // Add drag event listeners
                 row.addEventListener('dragstart', handleDragStart);
-                row.addEventListener('dragend', function(e) {
-                    handleDragEnd.call(this, e);
-                    this.draggable = false;
-                });
+                row.addEventListener('dragend', handleDragEnd);
                 row.addEventListener('dragover', handleDragOver);
                 row.addEventListener('drop', handleDrop);
                 row.addEventListener('dragleave', handleDragLeave);
@@ -1582,6 +1557,12 @@
         }
 
         function handleDragStart(e) {
+            // Only allow dragging from the drag handle
+            if (!e.target.closest('.drag-handle')) {
+                e.preventDefault();
+                return false;
+            }
+            
             draggedElement = this;
             // Also get the description row
             const descRow = this.nextSibling;
@@ -1594,23 +1575,6 @@
             
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', this.innerHTML);
-            
-            // Set a custom drag image if supported
-            if (e.dataTransfer.setDragImage) {
-                // Create a clone of the feature block for the drag image
-                const dragImage = document.createElement('div');
-                dragImage.style.position = 'absolute';
-                dragImage.style.top = '-1000px';
-                dragImage.style.background = '#252d3d';
-                dragImage.style.border = '2px solid #5ad1f2';
-                dragImage.style.borderRadius = '8px';
-                dragImage.style.padding = '10px';
-                dragImage.style.color = '#e0e6ed';
-                dragImage.innerHTML = this.querySelector('.feature-name-text').textContent;
-                document.body.appendChild(dragImage);
-                e.dataTransfer.setDragImage(dragImage, 0, 0);
-                setTimeout(() => document.body.removeChild(dragImage), 0);
-            }
         }
 
         function handleDragEnd(e) {
