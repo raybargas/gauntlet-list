@@ -680,7 +680,15 @@
             border-bottom: 3px solid #5ad1f2;
             box-shadow: 0 4px 12px rgba(90, 209, 242, 0.15);
         }
-
+        
+        /* Hover effect for feature blocks - flat color */
+        .feature-table tbody tr.feature-hover {
+            background: #252d3d !important;
+        }
+        
+        .feature-table tbody tr.feature-hover td {
+            background: #252d3d !important;
+        }
 
         .feature-table tbody tr.dragging {
             opacity: 0.4;
@@ -1484,7 +1492,43 @@
             });
 
             addDragEventListeners();
+            addHoverEventListeners();
             updateStats();
+        }
+        
+        // Add hover event listeners for feature blocks
+        function addHoverEventListeners() {
+            const rows = document.querySelectorAll('#featureTableBody tr');
+            
+            rows.forEach((row) => {
+                row.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('feature-main-row')) {
+                        this.classList.add('feature-hover');
+                        if (this.nextSibling && this.nextSibling.classList.contains('feature-desc-row')) {
+                            this.nextSibling.classList.add('feature-hover');
+                        }
+                    } else if (this.classList.contains('feature-desc-row')) {
+                        this.classList.add('feature-hover');
+                        if (this.previousSibling && this.previousSibling.classList.contains('feature-main-row')) {
+                            this.previousSibling.classList.add('feature-hover');
+                        }
+                    }
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    if (this.classList.contains('feature-main-row')) {
+                        this.classList.remove('feature-hover');
+                        if (this.nextSibling && this.nextSibling.classList.contains('feature-desc-row')) {
+                            this.nextSibling.classList.remove('feature-hover');
+                        }
+                    } else if (this.classList.contains('feature-desc-row')) {
+                        this.classList.remove('feature-hover');
+                        if (this.previousSibling && this.previousSibling.classList.contains('feature-main-row')) {
+                            this.previousSibling.classList.remove('feature-hover');
+                        }
+                    }
+                });
+            });
         }
 
         // Drag and drop functionality
