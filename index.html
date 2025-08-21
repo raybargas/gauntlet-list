@@ -633,18 +633,20 @@
             position: relative;
         }
         
-        .feature-cell {
-            padding: 0.75rem 0.5rem;
-            vertical-align: top;
+        /* Style for main feature rows */
+        .feature-table tbody tr.feature-main-row {
+            background: #1a1f2e;
         }
         
-        /* Add bottom border only to description rows (every second row) */
-        .feature-table tbody tr:nth-child(even) {
+        /* Style for description rows - same background as main row */
+        .feature-table tbody tr.feature-desc-row {
+            background: #1a1f2e;
             border-bottom: 1px solid #2d3748;
         }
         
-        .feature-table tbody tr:nth-child(odd) {
-            border-bottom: none;
+        .feature-cell {
+            padding: 0.75rem 0.5rem;
+            vertical-align: middle;
         }
         
         .description-link {
@@ -660,24 +662,25 @@
             opacity: 1;
         }
         
-        /* Highlight first 15 feature blocks (30 rows total - 2 rows per feature) for Gauntlet Sprint */
-        .feature-table tbody tr:nth-child(-n+30) {
-            background: linear-gradient(90deg, rgba(90, 209, 242, 0.05) 0%, rgba(90, 209, 242, 0.02) 50%, transparent 100%);
+        /* Highlight first 15 feature blocks for Gauntlet Sprint */
+        .feature-table tbody tr.feature-main-row.top-15,
+        .feature-table tbody tr.feature-desc-row.top-15 {
+            background: linear-gradient(90deg, rgba(90, 209, 242, 0.05) 0%, rgba(90, 209, 242, 0.02) 50%, #1a1f2e 100%);
         }
         
-        /* Add left border only to main feature rows in top 15 */
-        .feature-table tbody tr:nth-child(-n+29):nth-child(odd) {
+        /* Add left border to top 15 feature blocks */
+        .feature-table tbody tr.feature-main-row.top-15 {
             border-left: 4px solid #5ad1f2;
         }
         
-        /* Separator line after 15th feature block (30th row) */
-        .feature-table tbody tr:nth-child(30) {
+        /* Separator line after 15th feature */
+        .feature-table tbody tr.feature-desc-row.top-15-last {
             border-bottom: 3px solid #5ad1f2;
             box-shadow: 0 4px 12px rgba(90, 209, 242, 0.15);
         }
         
-        /* Add badge to first cell of top 15 main feature rows */
-        .feature-table tbody tr:nth-child(-n+29):nth-child(odd) td:first-child::after {
+        /* Add badge to first cell of top 15 main rows */
+        .feature-table tbody tr.feature-main-row.top-15 td:first-child::after {
             content: '⚡';
             position: absolute;
             right: 2px;
@@ -693,7 +696,7 @@
             background: #252d3d !important;
         }
         
-        .feature-table tbody tr:nth-child(-n+30).feature-hover {
+        .feature-table tbody tr.top-15.feature-hover {
             background: linear-gradient(90deg, rgba(90, 209, 242, 0.12) 0%, rgba(37, 45, 61, 0.8) 50%, #252d3d 100%) !important;
         }
 
@@ -784,8 +787,7 @@
 
         .facing-cell {
             text-align: center;
-            vertical-align: top;
-            padding-top: 0.75rem !important;
+            vertical-align: middle;
         }
 
         .prfaq-status {
@@ -1339,7 +1341,14 @@
             tbody.innerHTML = '';
 
             filteredFeatures.forEach((feature, index) => {
+                const rowNumber = index + 1;
+                const isTop15 = rowNumber <= 15;
+                const isLast15 = rowNumber === 15;
+                
+                // Create main feature row
                 const row = document.createElement('tr');
+                row.classList.add('feature-main-row');
+                if (isTop15) row.classList.add('top-15');
                 row.dataset.featureId = feature.id;
                 row.draggable = true;
                 
@@ -1348,56 +1357,45 @@
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
                 
-                // Check if all documentation is complete
-                const allDocsComplete = feature.prfaqStatus === 'complete' && 
-                                       feature.prd && 
-                                       feature.figma && 
-                                       feature.architecture;
-                
-                if (allDocsComplete) {
-                    row.classList.add('docs-complete');
-                }
-
-                const rowNumber = index + 1;
                 row.innerHTML = `
-                    <td rowspan="2" style="text-align: center; font-weight: 600; color: ${rowNumber <= 15 ? '#5ad1f2' : '#6b7280'}; vertical-align: top; padding-top: 0.75rem;">${rowNumber}</td>
-                    <td class="feature-cell" style="padding-bottom: 0.25rem;">
+                    <td style="text-align: center; font-weight: 600; color: ${isTop15 ? '#5ad1f2' : '#6b7280'};">${rowNumber}</td>
+                    <td class="feature-cell">
                         <div style="display: flex; align-items: center;">
                             <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
                             <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
                         </div>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'internal')"
                            title="Internal - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${feature.external ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'external')"
                            title="External - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${prfaqChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'prfaq')"
                            title="PRFAQ - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${prdChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'prd')"
                            title="PRD - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${figmaChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'figma')"
                            title="Figma - Click to toggle"></i>
                     </td>
-                    <td class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <i class="fas fa-${architectureChecked ? 'check check-icon' : 'minus dash-icon'}" 
                            onclick="toggleIcon(${feature.id}, 'architecture')"
                            title="ARCH - Click to toggle"></i>
                     </td>
-                    <td rowspan="2" style="text-align: left; padding-left: 0.5rem; font-size: 0.75rem; color: #a0aec0; vertical-align: top; padding-top: 0.75rem;">
+                    <td style="text-align: left; padding-left: 0.5rem; font-size: 0.75rem; color: #a0aec0;">
                         ${feature.attendee ? (() => {
                             const parts = feature.attendee.split(' ');
                             const firstName = parts[0];
@@ -1431,7 +1429,7 @@
                             return '';
                         })() : ''}
                     </td>
-                    <td rowspan="2" class="facing-cell" style="vertical-align: top; padding-top: 0.75rem;">
+                    <td class="facing-cell">
                         <div class="action-buttons">
                             <button class="action-btn edit-btn" onclick="editFeature(${feature.id})" data-tooltip="Edit Feature">
                                 <i class="fas fa-pen"></i>
@@ -1445,11 +1443,15 @@
 
                 tbody.appendChild(row);
                 
-                // Add description row that spans multiple columns
+                // Add description row
                 const descRow = document.createElement('tr');
+                descRow.classList.add('feature-desc-row');
+                if (isTop15) descRow.classList.add('top-15');
+                if (isLast15) descRow.classList.add('top-15-last');
                 descRow.dataset.featureId = feature.id + '-desc';
                 descRow.innerHTML = `
-                    <td colspan="7" style="padding: 0.5rem 1rem 1rem 1rem; border-top: none;">
+                    <td style="border-top: none;"></td>
+                    <td colspan="9" style="padding: 0.5rem 1rem 1rem 1rem; border-top: none;">
                         <div style="display: flex; align-items: flex-start; gap: 0.5rem; color: #8892a0; font-size: 0.75rem; line-height: 1.5;">
                             <span style="color: #5ad1f2; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; margin-top: 2px;">Description:</span>
                             <span style="flex: 1;">${feature.description}</span>
@@ -1469,16 +1471,16 @@
         function addHoverEventListeners() {
             const rows = document.querySelectorAll('#featureTableBody tr');
             
-            rows.forEach((row, index) => {
+            rows.forEach((row) => {
                 row.addEventListener('mouseenter', function() {
                     // Determine if this is a main row or description row
-                    if (index % 2 === 0) {
+                    if (this.classList.contains('feature-main-row')) {
                         // Main row - highlight this and next row
                         this.classList.add('feature-hover');
                         if (this.nextSibling) {
                             this.nextSibling.classList.add('feature-hover');
                         }
-                    } else {
+                    } else if (this.classList.contains('feature-desc-row')) {
                         // Description row - highlight this and previous row
                         this.classList.add('feature-hover');
                         if (this.previousSibling) {
@@ -1489,12 +1491,12 @@
                 
                 row.addEventListener('mouseleave', function() {
                     // Remove hover from both rows
-                    if (index % 2 === 0) {
+                    if (this.classList.contains('feature-main-row')) {
                         this.classList.remove('feature-hover');
                         if (this.nextSibling) {
                             this.nextSibling.classList.remove('feature-hover');
                         }
-                    } else {
+                    } else if (this.classList.contains('feature-desc-row')) {
                         this.classList.remove('feature-hover');
                         if (this.previousSibling) {
                             this.previousSibling.classList.remove('feature-hover');
@@ -1510,17 +1512,14 @@
 
         function addDragEventListeners() {
             // Only add drag listeners to main feature rows (not description rows)
-            const rows = document.querySelectorAll('#featureTableBody tr');
+            const rows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
             
-            rows.forEach((row, index) => {
-                // Only add drag listeners to odd rows (main feature rows, index 0, 2, 4, etc.)
-                if (index % 2 === 0) {
-                    row.addEventListener('dragstart', handleDragStart);
-                    row.addEventListener('dragend', handleDragEnd);
-                    row.addEventListener('dragover', handleDragOver);
-                    row.addEventListener('drop', handleDrop);
-                    row.addEventListener('dragleave', handleDragLeave);
-                }
+            rows.forEach((row) => {
+                row.addEventListener('dragstart', handleDragStart);
+                row.addEventListener('dragend', handleDragEnd);
+                row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('drop', handleDrop);
+                row.addEventListener('dragleave', handleDragLeave);
             });
         }
 
@@ -1717,14 +1716,12 @@
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#featureTableBody tr');
+            const mainRows = document.querySelectorAll('#featureTableBody tr.feature-main-row');
             
-            // Process main feature rows (every other row)
-            for (let i = 0; i < rows.length; i += 2) {
-                const row = rows[i];
-                const descRow = rows[i + 1];
-                
+            mainRows.forEach((row) => {
+                const descRow = row.nextSibling;
                 const featureNameElement = row.querySelector('.feature-name-text');
+                
                 if (featureNameElement) {
                     const featureName = featureNameElement.textContent.toLowerCase();
                     const featureData = features.find(f => f.id === parseInt(row.dataset.featureId));
@@ -1733,11 +1730,11 @@
                     
                     // Show/hide both the main row and description row together
                     row.style.display = matches ? '' : 'none';
-                    if (descRow) {
+                    if (descRow && descRow.classList.contains('feature-desc-row')) {
                         descRow.style.display = matches ? '' : 'none';
                     }
                 }
-            }
+            });
             
             updateStats();
         });
