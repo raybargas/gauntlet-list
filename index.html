@@ -898,6 +898,13 @@
         </div>
 
         <div class="controls-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div style="display: flex; gap: 1.5rem; align-items: center; font-size: 0.85rem;">
+                    <span style="color: #6b7280;">Legend:</span>
+                    <span><i class="fas fa-circle" style="color: #5ad1f2; font-size: 0.7rem;"></i> Attendee (Gauntlet)</span>
+                    <span><i class="fas fa-circle" style="color: #10b981; font-size: 0.7rem;"></i> Stakeholder</span>
+                </div>
+            </div>
             <div class="controls-row">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -932,7 +939,7 @@
                         <th style="width: 5%;">PRD</th>
                         <th style="width: 5%;">Figma</th>
                         <th style="width: 5%;">ARCH</th>
-                        <th style="width: 8%;">Assigned</th>
+                        <th style="width: 8%;" title="Blue = Attendee, Green = Stakeholder">Assigned</th>
                         <th style="width: 8%;">Actions</th>
                     </tr>
                 </thead>
@@ -1321,11 +1328,11 @@
                            title="ARCH - Click to toggle"></i>
                     </td>
                     <td style="text-align: center; font-size: 0.85rem; color: #a0aec0;">
-                        ${feature.attendee ? `<div style="color: #5ad1f2; font-weight: 500;">${feature.attendee.split(' ')[0]}</div>` : ''}
+                        ${feature.attendee ? `<div style="color: #5ad1f2; font-weight: 500;" title="Attendee">${feature.attendee.split(' ')[0]}</div>` : ''}
                         ${feature.productManager ? 
                             (Array.isArray(feature.productManager) ? 
-                                feature.productManager.map(pm => `<div style="color: #10b981; font-size: 0.75rem;">${pm.split(' ')[0]}</div>`).join('') :
-                                `<div style="color: #10b981; font-size: 0.8rem;">${feature.productManager.split(' ')[0]}</div>`
+                                feature.productManager.map(pm => `<div style="color: #10b981; font-size: 0.75rem;" title="Stakeholder">${pm.split(' ')[0]}</div>`).join('') :
+                                `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${feature.productManager.split(' ')[0]}</div>`
                             ) : ''}
                     </td>
                     <td class="facing-cell">
