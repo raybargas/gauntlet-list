@@ -1327,36 +1327,39 @@
                            onclick="toggleIcon(${feature.id}, 'architecture')"
                            title="ARCH - Click to toggle"></i>
                     </td>
-                    <td style="text-align: center; font-size: 0.85rem; color: #a0aec0;">
+                    <td style="text-align: left; padding-left: 1rem; font-size: 0.8rem; color: #a0aec0;">
                         ${feature.attendee ? (() => {
                             const parts = feature.attendee.split(' ');
                             const firstName = parts[0];
-                            // Add last initial for Josh and Ray
-                            const displayName = (firstName === 'Josh' || firstName === 'Ray') && parts[1] ? 
-                                `${firstName} ${parts[1][0]}.` : firstName;
-                            return `<div style="color: #5ad1f2; font-weight: 500;" title="Attendee">${displayName}</div>`;
+                            const lastInitial = parts[1] ? parts[1][0] : '';
+                            const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName;
+                            return `
+                                <div>
+                                    <div style="color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Attendee</div>
+                                    <div style="color: #5ad1f2; font-size: 0.8rem;" title="Gauntlet Attendee">${displayName}</div>
+                                </div>`;
                         })() : ''}
-                        ${feature.productManager ? 
-                            (Array.isArray(feature.productManager) ? 
-                                feature.productManager.map(pm => {
-                                    const parts = pm.split(' ');
-                                    const firstName = parts[0];
-                                    // Add last initial for Josh, Ray, and Ryan
-                                    const displayName = (firstName === 'Josh' || firstName === 'Ray' || firstName === 'Ryan') && parts[1] ? 
-                                        `${firstName} ${parts[1][0]}.` : firstName;
-                                    return `<div style="color: #10b981; font-size: 0.75rem;" title="Stakeholder">${displayName}</div>`;
-                                }).join('') :
-                                (() => {
-                                    const parts = feature.productManager.split(' ');
-                                    const firstName = parts[0];
-                                    // Add last initial for Josh, Ray, and Ryan
-                                    const displayName = (firstName === 'Josh' || firstName === 'Ray' || firstName === 'Ryan') && parts[1] ? 
-                                        `${firstName} ${parts[1][0]}.` : firstName;
-                                    return `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${displayName}</div>`;
-                                })()
-                            ) : ''}
-                        ${feature.productManager && !feature.attendee ? `<div style="color: #6b7280; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Stakeholder</div>` : ''}
-                        ${feature.productManager && feature.attendee ? `<div style="color: #6b7280; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Stakeholder${Array.isArray(feature.productManager) && feature.productManager.length > 1 ? 's' : ''}</div>` : ''}
+                        ${(feature.attendee && feature.productManager) ? '<div style="border-top: 1px solid #374151; margin: 6px 0;"></div>' : ''}
+                        ${feature.productManager ? (() => {
+                            const stakeholders = Array.isArray(feature.productManager) ? feature.productManager : [feature.productManager];
+                            const stakeholdersList = stakeholders.filter(s => s).map(pm => {
+                                const parts = pm.split(' ');
+                                const firstName = parts[0];
+                                const lastInitial = parts[1] ? parts[1][0] : '';
+                                const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName;
+                                return `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${displayName}</div>`;
+                            }).join('');
+                            
+                            if (stakeholdersList) {
+                                const label = stakeholders.length > 1 ? 'Stakeholders' : 'Stakeholder';
+                                return `
+                                    <div>
+                                        <div style="color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">${label}</div>
+                                        ${stakeholdersList}
+                                    </div>`;
+                            }
+                            return '';
+                        })() : ''}
                     </td>
                     <td class="facing-cell">
                         <div class="action-buttons">
