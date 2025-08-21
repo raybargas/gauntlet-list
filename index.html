@@ -1328,11 +1328,32 @@
                            title="ARCH - Click to toggle"></i>
                     </td>
                     <td style="text-align: center; font-size: 0.85rem; color: #a0aec0;">
-                        ${feature.attendee ? `<div style="color: #5ad1f2; font-weight: 500;" title="Attendee">${feature.attendee.split(' ')[0]}</div>` : ''}
+                        ${feature.attendee ? (() => {
+                            const parts = feature.attendee.split(' ');
+                            const firstName = parts[0];
+                            // Add last initial for Josh and Ray
+                            const displayName = (firstName === 'Josh' || firstName === 'Ray') && parts[1] ? 
+                                `${firstName} ${parts[1][0]}.` : firstName;
+                            return `<div style="color: #5ad1f2; font-weight: 500;" title="Attendee">${displayName}</div>`;
+                        })() : ''}
                         ${feature.productManager ? 
                             (Array.isArray(feature.productManager) ? 
-                                feature.productManager.map(pm => `<div style="color: #10b981; font-size: 0.75rem;" title="Stakeholder">${pm.split(' ')[0]}</div>`).join('') :
-                                `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${feature.productManager.split(' ')[0]}</div>`
+                                feature.productManager.map(pm => {
+                                    const parts = pm.split(' ');
+                                    const firstName = parts[0];
+                                    // Add last initial for Josh, Ray, and Ryan
+                                    const displayName = (firstName === 'Josh' || firstName === 'Ray' || firstName === 'Ryan') && parts[1] ? 
+                                        `${firstName} ${parts[1][0]}.` : firstName;
+                                    return `<div style="color: #10b981; font-size: 0.75rem;" title="Stakeholder">${displayName}</div>`;
+                                }).join('') :
+                                (() => {
+                                    const parts = feature.productManager.split(' ');
+                                    const firstName = parts[0];
+                                    // Add last initial for Josh, Ray, and Ryan
+                                    const displayName = (firstName === 'Josh' || firstName === 'Ray' || firstName === 'Ryan') && parts[1] ? 
+                                        `${firstName} ${parts[1][0]}.` : firstName;
+                                    return `<div style="color: #10b981; font-size: 0.8rem;" title="Stakeholder">${displayName}</div>`;
+                                })()
                             ) : ''}
                     </td>
                     <td class="facing-cell">
