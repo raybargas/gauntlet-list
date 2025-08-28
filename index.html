@@ -1182,6 +1182,25 @@
                     console.log('Loaded features from JSONBin:', features.length);
                     console.log('Loaded deleted features:', deletedFeatures.length);
                     
+                    // If JSONBin is empty but we have local data, use local data
+                    if (features.length === 0) {
+                        console.log('JSONBin is empty, trying to load from local JSON file...');
+                        try {
+                            const localResponse = await fetch(dataFilePath);
+                            if (localResponse.ok) {
+                                const localData = await localResponse.json();
+                                features = localData.features || [];
+                                console.log('Loaded features from local JSON:', features.length);
+                                // Save to JSONBin for future use
+                                if (features.length > 0) {
+                                    saveFeaturesData(false);
+                                }
+                            }
+                        } catch (localError) {
+                            console.error('Error loading local JSON:', localError);
+                        }
+                    }
+                    
                     // Hide initialize button if we have data
                     if (features.length > 0) {
                         document.getElementById('initializeBtn').style.display = 'none';
@@ -1193,6 +1212,7 @@
                     // Also save to localStorage as backup
                     localStorage.setItem('gauntletFeatures', JSON.stringify(features));
                 } else {
+                    console.error('JSONBin response not OK:', response.status);
                     throw new Error('Failed to load from JSONBin');
                 }
             } catch (error) {
@@ -1214,7 +1234,21 @@
                         features = [];
                     }
                 } else {
-                    features = [];
+                    // Try loading from local JSON file as final fallback
+                    console.log('No localStorage data, trying local JSON file...');
+                    try {
+                        const localResponse = await fetch(dataFilePath);
+                        if (localResponse.ok) {
+                            const localData = await localResponse.json();
+                            features = localData.features || [];
+                            console.log('Loaded features from local JSON file (fallback):', features.length);
+                        } else {
+                            features = [];
+                        }
+                    } catch (localError) {
+                        console.error('Error loading local JSON file:', localError);
+                        features = [];
+                    }
                 }
                 
                 if (savedDeleted) {
@@ -1335,7 +1369,8 @@
                 // Create main feature row
                 const row = document.createElement('tr');
                 row.classList.add('feature-main-row');
-                const isSelectedProject = feature.projectType === 'capstone' || feature.projectType === 'individual';
+                const projectType = feature.projectType || '';
+                const isSelectedProject = projectType === 'capstone' || projectType === 'individual';
                 if (isSelectedProject) row.classList.add('selected-project');
                 row.dataset.featureId = feature.id;
                 
@@ -1344,12 +1379,11 @@
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
                 
-                const isSelectedProject = feature.projectType === 'capstone' || feature.projectType === 'individual';
-                const projectTypeDisplay = feature.projectType === 'capstone' ? 'Capstone' : 
-                                         feature.projectType === 'individual' ? 'Individual' : '';
-                const projectTypeBadge = feature.projectType === 'capstone' ? 
+                const projectType = feature.projectType || '';
+                const isSelectedProject = projectType === 'capstone' || projectType === 'individual';
+                const projectTypeBadge = projectType === 'capstone' ? 
                     `<span style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Capstone</span>` :
-                    feature.projectType === 'individual' ? 
+                    projectType === 'individual' ? 
                     `<span style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Individual</span>` :
                     `<span style="color: #6b7280; font-size: 0.7rem;">—</span>`;
                 
@@ -1547,13 +1581,14 @@
 
             // Only count selected projects (capstone or individual)
             features.forEach(feature => {
-                if (feature.projectType === 'capstone') {
+                const projectType = feature.projectType || '';
+                if (projectType === 'capstone') {
                     capstoneCount++;
                     if (feature.prfaqStatus !== 'complete') prfaqRequired++;
                     if (!feature.prd) prdRequired++;
                     if (!feature.figma) figmaRequired++;
                     if (!feature.architecture) architectureRequired++;
-                } else if (feature.projectType === 'individual') {
+                } else if (projectType === 'individual') {
                     individualCount++;
                     if (feature.prfaqStatus !== 'complete') prfaqRequired++;
                     if (!feature.prd) prdRequired++;
@@ -1728,7 +1763,7 @@
             if (newProjectType !== 'capstone') return true;
             
             const currentCapstones = features.filter(f => 
-                f.projectType === 'capstone' && f.id !== excludeFeatureId
+                (f.projectType || '') === 'capstone' && f.id !== excludeFeatureId
             ).length;
             
             return currentCapstones < 2;
