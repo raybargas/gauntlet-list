@@ -666,22 +666,16 @@
             opacity: 1;
         }
         
-        /* Highlight first 15 feature blocks for Gauntlet Sprint */
-        .feature-table tbody tr.feature-main-row.top-15,
-        .feature-table tbody tr.feature-desc-row.top-15 {
+        /* Highlight selected project feature blocks */
+        .feature-table tbody tr.feature-main-row.selected-project,
+        .feature-table tbody tr.feature-desc-row.selected-project {
             background: linear-gradient(90deg, rgba(90, 209, 242, 0.05) 0%, rgba(90, 209, 242, 0.02) 50%, #1a1f2e 100%);
         }
         
-        /* Add left border to top 15 feature blocks */
-        .feature-table tbody tr.feature-main-row.top-15,
-        .feature-table tbody tr.feature-desc-row.top-15 {
+        /* Add left border to selected project feature blocks */
+        .feature-table tbody tr.feature-main-row.selected-project,
+        .feature-table tbody tr.feature-desc-row.selected-project {
             border-left: 4px solid #5ad1f2;
-        }
-        
-        /* Separator line after 15th feature */
-        .feature-table tbody tr.feature-desc-row.top-15-last {
-            border-bottom: 3px solid #5ad1f2;
-            box-shadow: 0 4px 12px rgba(90, 209, 242, 0.15);
         }
         
         /* Hover effect for feature blocks - flat color */
@@ -924,8 +918,8 @@
     <div class="main-container">
         <div class="stats-section">
             <div class="stat-card" style="background: linear-gradient(135deg, rgba(90, 209, 242, 0.1) 0%, rgba(90, 209, 242, 0.05) 100%); border: 1px solid #5ad1f2;">
-                <div class="stat-label" style="color: #5ad1f2; font-weight: 600;">TOP 15 TRACKER</div>
-                <div class="stat-value" style="color: #5ad1f2; font-size: 1rem;">Gauntlet Sprint</div>
+                <div class="stat-label" style="color: #5ad1f2; font-weight: 600;">SELECTED PROJECTS</div>
+                <div class="stat-value" style="color: #5ad1f2; font-size: 0.85rem;" id="selectedProjects">0 selected</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">PRFAQs Needed</div>
@@ -972,12 +966,13 @@
                     <tr>
                         <th style="width: 3%;">#</th>
                         <th style="width: 38%;">Feature</th>
-                        <th style="width: 6%;">Internal</th>
-                        <th style="width: 6%;">External</th>
-                        <th style="width: 6%;">PRFAQ</th>
-                        <th style="width: 6%;">PRD</th>
-                        <th style="width: 6%;">Figma</th>
-                        <th style="width: 6%;">ARCH</th>
+                        <th style="width: 8%;">Project Type</th>
+                        <th style="width: 5%;">Internal</th>
+                        <th style="width: 5%;">External</th>
+                        <th style="width: 5%;">PRFAQ</th>
+                        <th style="width: 5%;">PRD</th>
+                        <th style="width: 5%;">Figma</th>
+                        <th style="width: 5%;">ARCH</th>
                         <th style="width: 15%;" title="Blue = Attendee, Green = Stakeholder">Assigned</th>
                         <th style="width: 10%;">Actions</th>
                     </tr>
@@ -1103,6 +1098,14 @@
                     <!-- Configuration - Right Column -->
                     <div class="modal-section">
                         <div class="modal-section-title">Configuration</div>
+                        <div class="form-group">
+                            <label for="featureProjectType">Project Type</label>
+                            <select id="featureProjectType">
+                                <option value="">-- Select Project Type --</option>
+                                <option value="capstone">Capstone Project</option>
+                                <option value="individual">Individual Project</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>Target Audience</label>
                             <div class="checkbox-group" style="margin-top: 0.5rem;">
@@ -1332,7 +1335,8 @@
                 // Create main feature row
                 const row = document.createElement('tr');
                 row.classList.add('feature-main-row');
-                if (isTop15) row.classList.add('top-15');
+                const isSelectedProject = feature.projectType === 'capstone' || feature.projectType === 'individual';
+                if (isSelectedProject) row.classList.add('selected-project');
                 row.dataset.featureId = feature.id;
                 
                 const prfaqChecked = feature.prfaqStatus === 'complete' ? 'checked' : '';
@@ -1340,8 +1344,17 @@
                 const figmaChecked = feature.figma ? 'checked' : '';
                 const architectureChecked = feature.architecture ? 'checked' : '';
                 
+                const isSelectedProject = feature.projectType === 'capstone' || feature.projectType === 'individual';
+                const projectTypeDisplay = feature.projectType === 'capstone' ? 'Capstone' : 
+                                         feature.projectType === 'individual' ? 'Individual' : '';
+                const projectTypeBadge = feature.projectType === 'capstone' ? 
+                    `<span style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Capstone</span>` :
+                    feature.projectType === 'individual' ? 
+                    `<span style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Individual</span>` :
+                    `<span style="color: #6b7280; font-size: 0.7rem;">—</span>`;
+                
                 row.innerHTML = `
-                    <td style="text-align: center; font-weight: 600; color: ${isTop15 ? '#5ad1f2' : '#6b7280'}; padding: 0.25rem 0.5rem;">${rowNumber}</td>
+                    <td style="text-align: center; font-weight: 600; color: ${isSelectedProject ? '#5ad1f2' : '#6b7280'}; padding: 0.25rem 0.5rem;">${rowNumber}</td>
                     <td class="feature-cell">
                         <div style="display: flex; align-items: center;">
                             <div class="reorder-buttons" style="display: flex; flex-direction: column; margin-right: 0.5rem;">
@@ -1354,6 +1367,9 @@
                             </div>
                             <span class="feature-name-text" style="font-weight: 500; color: #f7fafc;">${feature.name}</span>
                         </div>
+                    </td>
+                    <td class="facing-cell" style="text-align: center;">
+                        ${projectTypeBadge}
                     </td>
                     <td class="facing-cell">
                         <i class="fas fa-${feature.internal ? 'check check-icon' : 'minus dash-icon'}" 
@@ -1436,8 +1452,7 @@
                 // Add description row
                 const descRow = document.createElement('tr');
                 descRow.classList.add('feature-desc-row');
-                if (isTop15) descRow.classList.add('top-15');
-                if (isLast15) descRow.classList.add('top-15-last');
+                if (isSelectedProject) descRow.classList.add('selected-project');
                 descRow.dataset.featureId = feature.id + '-desc';
                 descRow.innerHTML = `
                     <td style="border-top: none;"></td>
@@ -1521,32 +1536,37 @@
 
 
 
-        // Update statistics - Top 15 only
+        // Update statistics - Selected projects only
         function updateStats() {
-            const allRows = document.querySelectorAll('#featureTableBody tr');
+            let capstoneCount = 0;
+            let individualCount = 0;
             let prfaqRequired = 0;
             let prdRequired = 0;
             let figmaRequired = 0;
             let architectureRequired = 0;
 
-            // Only count the first 15 visible main feature rows
-            let visibleCount = 0;
-            for (let i = 0; i < allRows.length && visibleCount < 15; i += 2) {
-                const row = allRows[i];
-                if (row && row.style.display !== 'none') {
-                    const featureId = parseInt(row.dataset.featureId);
-                    const feature = features.find(f => f.id === featureId);
-                    
-                    if (feature) {
-                        if (feature.prfaqStatus !== 'complete') prfaqRequired++;
-                        if (!feature.prd) prdRequired++;
-                        if (!feature.figma) figmaRequired++;
-                        if (!feature.architecture) architectureRequired++;
-                        visibleCount++;
-                    }
+            // Only count selected projects (capstone or individual)
+            features.forEach(feature => {
+                if (feature.projectType === 'capstone') {
+                    capstoneCount++;
+                    if (feature.prfaqStatus !== 'complete') prfaqRequired++;
+                    if (!feature.prd) prdRequired++;
+                    if (!feature.figma) figmaRequired++;
+                    if (!feature.architecture) architectureRequired++;
+                } else if (feature.projectType === 'individual') {
+                    individualCount++;
+                    if (feature.prfaqStatus !== 'complete') prfaqRequired++;
+                    if (!feature.prd) prdRequired++;
+                    if (!feature.figma) figmaRequired++;
+                    if (!feature.architecture) architectureRequired++;
                 }
-            }
+            });
 
+            const totalSelected = capstoneCount + individualCount;
+            const selectedText = totalSelected === 0 ? '0 selected' : 
+                `${totalSelected} selected (${capstoneCount} capstone, ${individualCount} individual)`;
+            
+            document.getElementById('selectedProjects').textContent = selectedText;
             document.getElementById('prfaqRequired').textContent = prfaqRequired;
             document.getElementById('prdRequired').textContent = prdRequired;
             document.getElementById('figmaRequired').textContent = figmaRequired;
@@ -1685,6 +1705,7 @@
                 document.getElementById('featureDescription').value = feature.description;
                 document.getElementById('featureUrl').value = feature.url || '';
                 document.getElementById('featureAttendee').value = feature.attendee || '';
+                document.getElementById('featureProjectType').value = feature.projectType || '';
                 // Set selected stakeholders
                 const pmSelect = document.getElementById('featureProductManager');
                 const stakeholders = Array.isArray(feature.productManager) ? feature.productManager : 
@@ -1702,9 +1723,28 @@
             }
         }
 
+        // Validation function for capstone limit
+        function validateCapstoneLimit(newProjectType, excludeFeatureId = null) {
+            if (newProjectType !== 'capstone') return true;
+            
+            const currentCapstones = features.filter(f => 
+                f.projectType === 'capstone' && f.id !== excludeFeatureId
+            ).length;
+            
+            return currentCapstones < 2;
+        }
+
         // Handle form submission
         document.getElementById('featureForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            const projectType = document.getElementById('featureProjectType').value;
+            
+            // Validate capstone limit
+            if (!validateCapstoneLimit(projectType, editingFeatureId)) {
+                alert('You can only select up to 2 Capstone Projects. Please change an existing capstone project first or select a different project type.');
+                return;
+            }
             
             if (editingFeatureId !== null) {
                 // Edit existing feature
@@ -1716,6 +1756,7 @@
                     feature.attendee = document.getElementById('featureAttendee').value;
                     const selectedOptions = Array.from(document.getElementById('featureProductManager').selectedOptions);
                     feature.productManager = selectedOptions.map(option => option.value);
+                    feature.projectType = projectType;
                     feature.internal = document.getElementById('featureInternal').checked;
                     feature.external = document.getElementById('featureExternal').checked;
                     feature.prfaqStatus = document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started';
@@ -1733,6 +1774,7 @@
                     url: document.getElementById('featureUrl').value,
                     attendee: document.getElementById('featureAttendee').value,
                     productManager: Array.from(document.getElementById('featureProductManager').selectedOptions).map(option => option.value),
+                    projectType: projectType,
                     internal: document.getElementById('featureInternal').checked,
                     external: document.getElementById('featureExternal').checked,
                     prfaqStatus: document.getElementById('featurePrfaq').checked ? 'complete' : 'not-started',
